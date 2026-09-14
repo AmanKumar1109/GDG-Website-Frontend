@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "react-router-dom";
 import { MapPin, Users, Globe, ShieldCheck, Tag, Sparkles, Clock3, BookOpen } from "lucide-react";
@@ -23,15 +23,17 @@ const ViewSingleEventPage = () => {
     throw new Error("Slug is required");
   }
 
-  const { data: event, isLoading } = usefetchEventDetaill(Slug);
+  const { data, isLoading } = usefetchEventDetaill(Slug);
 
-  const [minLoadingTimePassed, setMinLoadingTimePassed] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMinLoadingTimePassed(true);
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
+  if (isLoading) {
+    return <GDGLoader />;
+  }
+
+  if (!Slug) {
+    throw new Error("Slug is required");
+  }
+
+  const event = data;
 
   const tabs = useMemo(() => {
     if (!event) return [];
@@ -43,10 +45,6 @@ const ViewSingleEventPage = () => {
       ...((event.rules?.length > 0 || event.requirements?.length > 0) ? [{ id: "rules", label: "Rules & Guidelines" }] : []),
     ];
   }, [event]);
-
-  if (isLoading || !minLoadingTimePassed) {
-    return <GDGLoader />;
-  }
 
   if (!event) {
     return (
@@ -78,21 +76,21 @@ const ViewSingleEventPage = () => {
       <div className="pointer-events-none absolute left-[-120px] top-[15%] h-80 w-80 rounded-full bg-green-700/20 blur-[120px]" />
       <div className="pointer-events-none absolute right-[-100px] top-[40%] h-96 w-96 rounded-full bg-purple-700/20 blur-[150px]" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-4 sm:pb-12 pt-4 sm:pt-12 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-20 pt-16 sm:pt-24 sm:px-6 lg:px-8">
         {/* Banner and Highlights */}
         <EVENT_BANNER event={event} />
         <HIGHLIGHTS_Sec event={event} />
       </div>
 
       {/* ================= MAIN CONTENT GRID ================= */}
-      <section className="mt-4 sm:mt-10 lg:mt-16 w-full max-w-7xl mx-auto pb-10 sm:pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+      <section className="mt-10 lg:mt-16 w-full max-w-7xl mx-auto py-16 sm:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
           
           {/* LEFT COLUMN: Dynamic Content Based on Tabs */}
-          <div className="lg:col-span-8 flex flex-col pb-16 min-h-[400px] sm:min-h-[600px]">
+          <div className="lg:col-span-8 flex flex-col pb-24 min-h-[600px]">
             
             {/* Tabs Selector */}
-            <div className="flex gap-4 sm:gap-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] border-b border-white/10 mb-6 sm:mb-8 relative px-1">
+            <div className="flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar border-b border-white/10 mb-8 relative">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
@@ -191,7 +189,7 @@ const ViewSingleEventPage = () => {
 
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 px-1 sm:px-0">
                       {event.rules?.length > 0 && (
-                        <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-purple-950/20 to-black p-6 sm:p-8 shadow-xl">
+                        <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-purple-950/20 to-black p-8 shadow-xl">
                           <div className="mb-6 flex items-center gap-4">
                             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/20 text-purple-400">
                               <ShieldCheck size={24} />
@@ -203,7 +201,7 @@ const ViewSingleEventPage = () => {
                       )}
                       
                       {event.requirements?.length > 0 && (
-                        <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-emerald-950/20 to-black p-6 sm:p-8 shadow-xl">
+                        <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-emerald-950/20 to-black p-8 shadow-xl">
                           <div className="mb-6 flex items-center gap-4">
                             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400">
                               <BookOpen size={24} />
@@ -355,7 +353,7 @@ const ViewSingleEventPage = () => {
    BENTO ROW COMPONENT
 ============================================================ */
 const BentoRow = ({ icon, label, children }: { icon: React.ReactNode, label: string, children: React.ReactNode }) => (
-  <div className="flex items-start gap-3 sm:gap-4">
+  <div className="flex items-start gap-4">
     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08]">
       {icon}
     </div>

@@ -1,0 +1,56 @@
+--- src/features/Event/Pages/EventDetailPage.tsx
++++ src/features/Event/Pages/EventDetailPage.tsx
+@@ -10,6 +10,7 @@
+ import AboutEvent from "../Components/AboutEvent";
+ import Timeline from "../Components/Timeline";
+ import RulesList from "../Components/RulesList";
++import PersonCard from "../Components/PersonCard";
+ import usefetchEventDetaill from "../hook/usefetchEventDetaill";
+ import GDGLoader from "../../../Components/GDGLoader";
+ 
+@@ -155,7 +156,7 @@
+         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+           
+           {/* LEFT COLUMN: About, Timeline, Rules */}
+-          <div className="lg:col-span-8 flex flex-col gap-16">
++          <div className="lg:col-span-8 flex flex-col gap-16 pb-24">
+             
+             {/* About Section Wrapper */}
+             <div className="prose prose-invert max-w-none">
+@@ -201,6 +202,38 @@
+                 )}
+               </div>
+             )}
++            
++            {/* Mentors Section */}
++            {event.mentors?.length > 0 && (
++              <div>
++                <div className="mb-8">
++                  <h2 className="text-3xl font-bold tracking-tight text-white">Event Mentors</h2>
++                  <p className="mt-2 text-white/50 text-sm">Learn from industry experts.</p>
++                </div>
++                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
++                  {event.mentors.map((mentor: any) => (
++                    <PersonCard key={mentor._id} {...mentor} role="Mentor" />
++                  ))}
++                </div>
++              </div>
++            )}
++
++            {/* Judges Section */}
++            {event.judges?.length > 0 && (
++              <div>
++                <div className="mb-8">
++                  <h2 className="text-3xl font-bold tracking-tight text-white">Event Judges</h2>
++                  <p className="mt-2 text-white/50 text-sm">Evaluators & industry leaders.</p>
++                </div>
++                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
++                  {event.judges.map((judge: any) => (
++                    <PersonCard key={judge._id} {...judge} role="Judge" />
++                  ))}
++                </div>
++              </div>
++            )}
+ 
+           </div>
+ 

@@ -39,8 +39,8 @@ const HIGHLIGHTS_Sec = ({ event }: EventHignLightsProps) => {
   const mentorCount = event.mentors?.length ?? 0;
 
   return (
-    <section className="hidden md:block mt-5 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-md">
-      <div className="grid grid-cols-1 divide-y divide-white/[0.07] sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+    <section className="block mt-4 sm:mt-5 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-md">
+      <div className="grid grid-cols-2 lg:grid-cols-4 [&>*:nth-child(odd)]:border-r [&>*:nth-child(1)]:border-b [&>*:nth-child(2)]:border-b lg:[&>*:nth-child(odd)]:border-r-0 lg:[&>*:nth-child(1)]:border-b-0 lg:[&>*:nth-child(2)]:border-b-0 lg:divide-x border-white/[0.07] divide-white/[0.07]">
         {/* Event Type */}
         <Highlight
           icon={<Zap size={18} />}

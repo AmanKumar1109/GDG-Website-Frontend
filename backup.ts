@@ -12,15 +12,7 @@ function useFetchEventDetaill(slug: string) {
       try {
         const response = await api.get(`/api/v1/event/${slug}`);
         if (response.data?.data?.[0]) {
-          const apiEvent = response.data.data[0];
-          return {
-            ...apiEvent,
-            mentors: apiEvent.mentors && apiEvent.mentors.length > 0 ? apiEvent.mentors : singleEventData.mentors,
-            judges: apiEvent.judges && apiEvent.judges.length > 0 ? apiEvent.judges : singleEventData.judges,
-            rules: apiEvent.rules && apiEvent.rules.length > 0 ? apiEvent.rules : singleEventData.rules,
-            timeline: apiEvent.timeline && apiEvent.timeline.length > 0 ? apiEvent.timeline : singleEventData.timeline,
-            requirements: apiEvent.requirements && apiEvent.requirements.length > 0 ? apiEvent.requirements : singleEventData.requirements,
-          };
+          return response.data.data[0];
         }
       } catch {
         console.warn(`[GDG Ranchi] Failed to fetch live event for ${slug}, using fallback.`);
@@ -32,6 +24,7 @@ function useFetchEventDetaill(slug: string) {
         ...fallbackUpcomingEvents,
         ...fallbackPastEvents,
       ];
+
       const found = allEvents.find(
         (e) => e.Slug?.toLowerCase() === slug.toLowerCase() || e._id === slug,
       );
@@ -45,8 +38,6 @@ function useFetchEventDetaill(slug: string) {
             ? found.requirements
             : singleEventData.requirements,
           timeline: found.timeline?.length ? found.timeline : singleEventData.timeline,
-          mentors: found.mentors?.length ? found.mentors : singleEventData.mentors,
-          judges: found.judges?.length ? found.judges : singleEventData.judges,
         };
       }
 

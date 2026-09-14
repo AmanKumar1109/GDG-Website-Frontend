@@ -1,11 +1,76 @@
-import { useState, useMemo, useEffect } from "react";
+#!/bin/bash
+cat << 'HOOK_EOF' > src/features/Event/hook/usefetchEventDetaill.ts
+import { useQuery } from "@tanstack/react-query";
+import api from "../../../utils/axios.utils";
+import { singleEventData } from "../data/singleEventData";
+import { fallbackUpcomingEvents } from "./useFetchUpcomingEvent";
+import { fallbackPastEvents } from "./useFetchPastEvent";
+import type { EventResponse } from "../type/Event.type";
+
+function useFetchEventDetaill(slug: string) {
+  return useQuery({
+    queryKey: ["findSingleEvent", { slug }],
+    queryFn: async () => {
+      try {
+        const response = await api.get(`/api/v1/event/${slug}`);
+        if (response.data?.data?.[0]) {
+          const apiEvent = response.data.data[0];
+          return {
+            ...apiEvent,
+            mentors: apiEvent.mentors && apiEvent.mentors.length > 0 ? apiEvent.mentors : singleEventData.mentors,
+            judges: apiEvent.judges && apiEvent.judges.length > 0 ? apiEvent.judges : singleEventData.judges,
+            rules: apiEvent.rules && apiEvent.rules.length > 0 ? apiEvent.rules : singleEventData.rules,
+            timeline: apiEvent.timeline && apiEvent.timeline.length > 0 ? apiEvent.timeline : singleEventData.timeline,
+            requirements: apiEvent.requirements && apiEvent.requirements.length > 0 ? apiEvent.requirements : singleEventData.requirements,
+          };
+        }
+      } catch {
+        console.warn(`[GDG Ranchi] Failed to fetch live event for ${slug}, using fallback.`);
+      }
+
+      // Check known upcoming and past events
+      const allEvents: EventResponse[] = [
+        singleEventData,
+        ...fallbackUpcomingEvents,
+        ...fallbackPastEvents,
+      ];
+      const found = allEvents.find(
+        (e) => e.Slug?.toLowerCase() === slug.toLowerCase() || e._id === slug,
+      );
+
+      if (found) {
+        return {
+          ...found,
+          descriptionMarkdown: found.descriptionMarkdown || singleEventData.descriptionMarkdown,
+          rules: found.rules?.length ? found.rules : singleEventData.rules,
+          requirements: found.requirements?.length
+            ? found.requirements
+            : singleEventData.requirements,
+          timeline: found.timeline?.length ? found.timeline : singleEventData.timeline,
+          mentors: found.mentors?.length ? found.mentors : singleEventData.mentors,
+          judges: found.judges?.length ? found.judges : singleEventData.judges,
+        };
+      }
+
+      // Fallback with current slug
+      return {
+        ...singleEventData,
+        Slug: slug,
+        title: slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      };
+    },
+  });
+}
+
+export default useFetchEventDetaill;
+HOOK_EOF
+
+cat << 'PAGE_EOF' > src/features/Event/Pages/EventDetailPage.tsx
+import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "react-router-dom";
 import { MapPin, Users, Globe, ShieldCheck, Tag, Sparkles, Clock3, BookOpen } from "lucide-react";
-import {
-  formatDate,
-  formatStatus,
-} from "../utils/Event.utils";
+import { formatDate, formatStatus } from "../utils/Event.utils";
 import AboutEvent from "../Components/AboutEvent";
 import Timeline from "../Components/Timeline";
 import EVENT_BANNER from "../Components/EVENT_BANNER";
@@ -14,6 +79,20 @@ import RulesList from "../Components/RulesList";
 import PersonCard from "../Components/PersonCard";
 import usefetchEventDetaill from "../hook/usefetchEventDetaill";
 import GDGLoader from "../../../Components/GDGLoader";
+
+const BentoRow = ({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) => (
+  <div className="flex items-start gap-4">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08]">
+      {icon}
+    </div>
+    <div className="flex flex-col">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-white/40 mb-1">{label}</span>
+      <span className="text-sm font-semibold text-white/90 leading-tight">
+        {children}
+      </span>
+    </div>
+  </div>
+);
 
 const ViewSingleEventPage = () => {
   const { Slug } = useParams<{ Slug: string }>();
@@ -25,28 +104,22 @@ const ViewSingleEventPage = () => {
 
   const { data: event, isLoading } = usefetchEventDetaill(Slug);
 
-  const [minLoadingTimePassed, setMinLoadingTimePassed] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMinLoadingTimePassed(true);
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
-
   const tabs = useMemo(() => {
     if (!event) return [];
     return [
       { id: "about", label: "About" },
-      ...(event.timeline?.length > 0 ? [{ id: "timeline", label: "Timeline" }] : []),
-      ...(event.judges?.length > 0 ? [{ id: "judges", label: "Judges" }] : []),
-      ...(event.mentors?.length > 0 ? [{ id: "mentors", label: "Mentors" }] : []),
-      ...((event.rules?.length > 0 || event.requirements?.length > 0) ? [{ id: "rules", label: "Rules & Guidelines" }] : []),
+      ...(event.timeline?.length ? [{ id: "timeline", label: "Timeline" }] : []),
+      ...(event.judges?.length ? [{ id: "judges", label: "Judges" }] : []),
+      ...(event.mentors?.length ? [{ id: "mentors", label: "Mentors" }] : []),
+      ...(event.rules?.length || event.requirements?.length ? [{ id: "rules", label: "Rules & Guidelines" }] : []),
     ];
   }, [event]);
 
-  if (isLoading || !minLoadingTimePassed) {
-    return <GDGLoader />;
-  }
+  const handleTabChange = useCallback((id: string) => {
+    setActiveTab(id);
+  }, []);
+
+  if (isLoading) return <GDGLoader />;
 
   if (!event) {
     return (
@@ -58,49 +131,36 @@ const ViewSingleEventPage = () => {
 
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-[#050505] text-white">
-      {/* Background Grid - Responsive sizing */}
       <div className="absolute inset-0 opacity-[0.05]">
         <div
           className="h-full w-full"
           style={{
-            backgroundImage: `
-              linear-gradient(to right, white 1px, transparent 1px),
-              linear-gradient(to bottom, white 1px, transparent 1px)
-            `,
+            backgroundImage: `linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)`,
             backgroundSize: "80px 80px",
           }}
         />
       </div>
 
-      {/* Background Effects - Keep absolute positioning but ensure they don't block content */}
       <div className="pointer-events-none absolute left-[-120px] top-[-100px] h-80 w-80 rounded-full bg-[#EA4335]/20 blur-[120px]" />
       <div className="pointer-events-none absolute right-[-100px] top-[5%] h-96 w-96 rounded-full bg-[#4285F4]/20 blur-[150px]" />
       <div className="pointer-events-none absolute left-[-120px] top-[15%] h-80 w-80 rounded-full bg-green-700/20 blur-[120px]" />
       <div className="pointer-events-none absolute right-[-100px] top-[40%] h-96 w-96 rounded-full bg-purple-700/20 blur-[150px]" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-4 sm:pb-12 pt-4 sm:pt-12 sm:px-6 lg:px-8">
-        {/* Banner and Highlights */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-20 pt-16 sm:pt-24 sm:px-6 lg:px-8">
         <EVENT_BANNER event={event} />
         <HIGHLIGHTS_Sec event={event} />
       </div>
 
-      {/* ================= MAIN CONTENT GRID ================= */}
-      <section className="mt-4 sm:mt-10 lg:mt-16 w-full max-w-7xl mx-auto pb-10 sm:pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
-          
-          {/* LEFT COLUMN: Dynamic Content Based on Tabs */}
-          <div className="lg:col-span-8 flex flex-col pb-16 min-h-[400px] sm:min-h-[600px]">
-            
-            {/* Tabs Selector */}
-            <div className="flex gap-4 sm:gap-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] border-b border-white/10 mb-6 sm:mb-8 relative px-1">
-              {tabs.map(tab => (
+      <section className="mt-10 lg:mt-16 w-full max-w-7xl mx-auto py-16 sm:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+          <div className="lg:col-span-8 flex flex-col pb-24 min-h-[600px]">
+            <div className="flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar border-b border-white/10 mb-8 relative">
+              {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleTabChange(tab.id)}
                   className={`relative py-4 text-sm sm:text-base font-bold whitespace-nowrap transition-colors duration-300 ${
-                    activeTab === tab.id 
-                      ? 'text-white' 
-                      : 'text-white/50 hover:text-white/90'
+                    activeTab === tab.id ? "text-white" : "text-white/50 hover:text-white/90"
                   }`}
                 >
                   {tab.label}
@@ -115,7 +175,6 @@ const ViewSingleEventPage = () => {
               ))}
             </div>
 
-            {/* Tab Content Area */}
             <div className="relative w-full">
               <AnimatePresence mode="wait">
                 {activeTab === "about" && (
@@ -127,18 +186,17 @@ const ViewSingleEventPage = () => {
                     transition={{ duration: 0.3 }}
                     className="prose prose-invert max-w-none"
                   >
-                     <AboutEvent event={event} />
+                    <AboutEvent event={event} />
                   </motion.div>
                 )}
 
-                {activeTab === "timeline" && event.timeline && event.timeline.length > 0 && (
+                {activeTab === "timeline" && event.timeline?.length > 0 && (
                   <motion.div
                     key="timeline"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.3 }}
-                    id="schedule"
                     className="w-full py-4 sm:py-8 px-4 sm:px-8 rounded-3xl border border-white/10 bg-[#0a0a0a] shadow-2xl"
                   >
                     <div className="max-w-3xl mx-auto sm:mx-0 mb-8">
@@ -155,10 +213,9 @@ const ViewSingleEventPage = () => {
                         Follow the timeline to know what happens when.
                       </p>
                     </div>
-                    {/* Subtle divider */}
                     <div className="my-8 h-px w-full bg-white/[0.07]" />
                     <div className="px-1 sm:px-0">
-                       <Timeline timeline={event.timeline} />
+                      <Timeline timeline={event.timeline} />
                     </div>
                   </motion.div>
                 )}
@@ -182,16 +239,12 @@ const ViewSingleEventPage = () => {
                       <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-[1.875rem] sm:leading-tight">
                         Rules & Requirements
                       </h2>
-                      <p className="mt-4 max-w-2xl text-sm leading-7 text-white/45 sm:text-[15px]">
-                        Please read and follow these guidelines to ensure a great experience for everyone.
-                      </p>
                     </div>
-                    {/* Subtle divider */}
                     <div className="my-8 h-px w-full bg-white/[0.07]" />
 
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 px-1 sm:px-0">
                       {event.rules?.length > 0 && (
-                        <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-purple-950/20 to-black p-6 sm:p-8 shadow-xl">
+                        <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-purple-950/20 to-black p-8 shadow-xl">
                           <div className="mb-6 flex items-center gap-4">
                             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/20 text-purple-400">
                               <ShieldCheck size={24} />
@@ -201,9 +254,8 @@ const ViewSingleEventPage = () => {
                           <RulesList items={event.rules} />
                         </div>
                       )}
-                      
                       {event.requirements?.length > 0 && (
-                        <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-emerald-950/20 to-black p-6 sm:p-8 shadow-xl">
+                        <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-emerald-950/20 to-black p-8 shadow-xl">
                           <div className="mb-6 flex items-center gap-4">
                             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400">
                               <BookOpen size={24} />
@@ -236,13 +288,8 @@ const ViewSingleEventPage = () => {
                       <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-[1.875rem] sm:leading-tight">
                         Event Mentors
                       </h2>
-                      <p className="mt-4 max-w-2xl text-sm leading-7 text-white/45 sm:text-[15px]">
-                        Learn from industry experts and experienced professionals.
-                      </p>
                     </div>
-                    {/* Subtle divider */}
                     <div className="my-8 h-px w-full bg-white/[0.07]" />
-                    
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-1 sm:px-0">
                       {event.mentors.map((mentor: any) => (
                         <PersonCard key={mentor._id} {...mentor} role="Mentor" />
@@ -270,13 +317,8 @@ const ViewSingleEventPage = () => {
                       <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-[1.875rem] sm:leading-tight">
                         Event Judges
                       </h2>
-                      <p className="mt-4 max-w-2xl text-sm leading-7 text-white/45 sm:text-[15px]">
-                        Meet the esteemed evaluators and industry leaders for this event.
-                      </p>
                     </div>
-                    {/* Subtle divider */}
                     <div className="my-8 h-px w-full bg-white/[0.07]" />
-
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-1 sm:px-0">
                       {event.judges.map((judge: any) => (
                         <PersonCard key={judge._id} {...judge} role="Judge" />
@@ -288,17 +330,13 @@ const ViewSingleEventPage = () => {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Bento Info Sidebar */}
           <div className="lg:col-span-4 lg:sticky lg:top-32 flex flex-col gap-6">
-            
-            {/* Quick Summary Bento */}
             <div className="rounded-3xl border border-white/10 bg-[#0a0a0a] overflow-hidden shadow-2xl">
               <div className="p-6 border-b border-white/10 bg-white/[0.02]">
                 <h3 className="text-lg font-bold text-white mb-1">Event Summary</h3>
                 <p className="text-xs text-white/40">Essential details at a glance</p>
               </div>
               <div className="p-6 grid grid-cols-1 gap-6">
-                
                 <BentoRow icon={<MapPin className="text-red-400"/>} label="Venue Location">
                   {event.venue?.venueName || "TBA"} <br/>
                   <span className="text-white/50 font-normal">
@@ -320,52 +358,32 @@ const ViewSingleEventPage = () => {
                 </BentoRow>
 
                 <BentoRow icon={<Sparkles className="text-amber-400"/>} label="Mentors">
-                  {event.mentors?.length > 0 ? `${event.mentors.length}+ Expert Mentors` : "Mentors TBA"}
+                  {event.mentors?.length ? `${event.mentors.length}+ Expert Mentors` : "Mentors TBA"}
                 </BentoRow>
-
               </div>
             </div>
 
-            {/* Tags Box */}
-            {event.tags && event.tags.length > 0 && (
+            {event.tags?.length > 0 && (
               <div className="rounded-3xl border border-white/10 bg-[#0a0a0a] p-6 shadow-2xl">
-                 <div className="flex items-center gap-2 mb-4">
-                    <Tag size={14} className="text-white/40"/>
-                    <h3 className="text-sm font-bold text-white/70 uppercase tracking-widest">Explore Topics</h3>
-                 </div>
-                 <div className="flex flex-wrap gap-2">
-                    {event.tags.map((tag: string) => (
-                      <span key={tag} className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-xs font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors cursor-default">
-                        #{tag}
-                      </span>
-                    ))}
-                 </div>
+                <div className="flex items-center gap-2 mb-4">
+                  <Tag size={14} className="text-white/40"/>
+                  <h3 className="text-sm font-bold text-white/70 uppercase tracking-widest">Explore Topics</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {event.tags.map((tag: string) => (
+                    <span key={tag} className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-xs font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors cursor-default">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
-
           </div>
-
         </div>
       </section>
     </main>
   );
 };
 
-/* ============================================================
-   BENTO ROW COMPONENT
-============================================================ */
-const BentoRow = ({ icon, label, children }: { icon: React.ReactNode, label: string, children: React.ReactNode }) => (
-  <div className="flex items-start gap-3 sm:gap-4">
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08]">
-      {icon}
-    </div>
-    <div className="flex flex-col">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-white/40 mb-1">{label}</span>
-      <span className="text-sm font-semibold text-white/90 leading-tight">
-        {children}
-      </span>
-    </div>
-  </div>
-)
-
 export default ViewSingleEventPage;
+PAGE_EOF

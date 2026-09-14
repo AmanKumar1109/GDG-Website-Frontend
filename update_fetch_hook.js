@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+const fs = require('fs');
+const content = `import { useQuery } from "@tanstack/react-query";
 import api from "../../../utils/axios.utils";
 import { singleEventData } from "../data/singleEventData";
 import { fallbackUpcomingEvents } from "./useFetchUpcomingEvent";
@@ -10,7 +11,7 @@ function useFetchEventDetaill(slug: string) {
     queryKey: ["findSingleEvent", { slug }],
     queryFn: async () => {
       try {
-        const response = await api.get(`/api/v1/event/${slug}`);
+        const response = await api.get(\`/api/v1/event/\${slug}\`);
         if (response.data?.data?.[0]) {
           const apiEvent = response.data.data[0];
           return {
@@ -23,7 +24,7 @@ function useFetchEventDetaill(slug: string) {
           };
         }
       } catch {
-        console.warn(`[GDG Ranchi] Failed to fetch live event for ${slug}, using fallback.`);
+        console.warn(\`[GDG Ranchi] Failed to fetch live event for \${slug}, using fallback.\`);
       }
 
       // Check known upcoming and past events
@@ -54,10 +55,12 @@ function useFetchEventDetaill(slug: string) {
       return {
         ...singleEventData,
         Slug: slug,
-        title: slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+        title: slug.replace(/-/g, " ").replace(/\\b\\w/g, (c) => c.toUpperCase()),
       };
     },
   });
 }
 
 export default useFetchEventDetaill;
+`
+fs.writeFileSync('src/features/Event/hook/usefetchEventDetaill.ts', content);

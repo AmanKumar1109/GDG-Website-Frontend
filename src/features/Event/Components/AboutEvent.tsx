@@ -10,7 +10,7 @@ interface AboutEventProps {
 
 const AboutEvent = ({ event }: AboutEventProps) => {
   return (
-    <section className="w-full py-4 sm:py-8 px-4 sm:px-8 rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#111315] via-[#0b0d0e] to-[#070808]">
+    <section className="w-full py-4 sm:py-8 px-4 sm:px-8 rounded-3xl border border-white/10 bg-[#0a0a0a] shadow-2xl">
       {/* Header */}
       <div className="max-w-3xl mx-auto sm:mx-0">
         <div className="mb-3 flex items-center gap-2">

@@ -20,7 +20,7 @@ const EVENT_BANNER = ({ event }: EventBannerProps) => {
   const eventDate = formatDateRange(eventStart, eventEnd);
 
   return (
-    <section className="relative mt-[6vh] sm:mt-[8vh] overflow-hidden rounded-3xl border border-white/10 bg-[#0b0b0f] shadow-2xl shadow-black/30">
+    <section className="relative mt-4 sm:mt-[6vh] lg:mt-[8vh] overflow-hidden rounded-3xl border border-white/10 bg-[#0b0b0f] shadow-2xl shadow-black/30">
       <div className="flex flex-col flex-col-reverse lg:flex-row items-stretch">
         {/* ================= LEFT — EVENT CONTENT ================= */}
         <div className="relative z-10 flex flex-col justify-center p-5 sm:p-8 lg:px-[3vw] lg:py-[4vw] flex-1">
@@ -110,10 +110,10 @@ const EVENT_BANNER = ({ event }: EventBannerProps) => {
             />
           </div>
 
-          <div className="mt-6 sm:mt-9 flex flex-col sm:flex-wrap gap-2 sm:gap-3">
+          <div className="mt-6 sm:mt-9 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
             <button
               type="button"
-              className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl bg-white px-4 sm:px-6 py-2.5 sm:py-3.5 text-xs sm:text-sm font-semibold text-black shadow-lg shadow-black/20 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 active:translate-y-0"
+              className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl bg-white px-4 sm:px-6 py-3 sm:py-3.5 text-sm font-semibold text-black shadow-lg shadow-black/20 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 active:translate-y-0 w-full sm:w-auto"
             >
               Register Now
               <ArrowRight
@@ -127,7 +127,7 @@ const EVENT_BANNER = ({ event }: EventBannerProps) => {
                 href={event.redirectUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-4 sm:px-6 py-2.5 sm:py-3.5 text-xs sm:text-sm font-medium text-white/70 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.07] hover:text-white active:translate-y-0"
+                className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-4 sm:px-6 py-3 sm:py-3.5 text-sm font-medium text-white/70 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.07] hover:text-white active:translate-y-0 w-full sm:w-auto"
               >
                 Event Website
                 <ExternalLink
@@ -140,7 +140,7 @@ const EVENT_BANNER = ({ event }: EventBannerProps) => {
         </div>
 
         {/* ================= RIGHT — EVENT IMAGE ================= */}
-        <div className="relative min-h-[280px] sm:min-h-[350px] lg:min-h-full overflow-hidden flex-none lg:w-[50%]">
+        <div className="relative min-h-[240px] sm:min-h-[350px] lg:min-h-full overflow-hidden flex-none lg:w-[50%]">
           {event.coverImageUrl ? (
             <img
               src={event.coverImageUrl}
