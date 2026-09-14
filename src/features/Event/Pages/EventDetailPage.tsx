@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "react-router-dom";
-import { MapPin, Users, Globe, ShieldCheck, Tag, Sparkles, Clock3, BookOpen } from "lucide-react";
+import { MapPin, Globe, ShieldCheck, Tag, Sparkles, Clock3, BookOpen } from "lucide-react";
 import {
   formatDate,
   formatStatus,
@@ -33,16 +33,39 @@ const ViewSingleEventPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
+
+
   const tabs = useMemo(() => {
     if (!event) return [];
-    return [
-      { id: "about", label: "About" },
-      ...(event.timeline?.length > 0 ? [{ id: "timeline", label: "Timeline" }] : []),
-      ...(event.judges?.length > 0 ? [{ id: "judges", label: "Judges" }] : []),
-      ...(event.mentors?.length > 0 ? [{ id: "mentors", label: "Mentors" }] : []),
-      ...((event.rules?.length > 0 || event.requirements?.length > 0) ? [{ id: "rules", label: "Rules & Guidelines" }] : []),
-    ];
+    
+    // We always show About
+    const generatedTabs = [ { id: "about", label: "About" } ];
+
+    if (event.timeline && event.timeline.length > 0) {
+      generatedTabs.push({ id: "timeline", label: "Timeline" });
+    }
+    
+    if (event.judges && ((event.judges?.length ?? 0) || 0) > 0) {
+      generatedTabs.push({ id: "judges", label: "Judges" });
+    }
+    
+    if (event.mentors && ((event.mentors?.length ?? 0) || 0) > 0) {
+      generatedTabs.push({ id: "mentors", label: "Mentors" });
+    }
+    
+    if ((event.rules && event.rules.length > 0) || (event.requirements && event.requirements.length > 0)) {
+      generatedTabs.push({ id: "rules", label: "Rules & Guidelines" });
+    }
+
+    return generatedTabs;
   }, [event]);
+
+  useEffect(() => {
+    if (tabs.length > 0 && !tabs.find(t => t.id === activeTab)) {
+      setActiveTab("about");
+    }
+  }, [tabs, activeTab]);
+
 
   if (isLoading || !minLoadingTimePassed) {
     return <GDGLoader />;
@@ -163,7 +186,7 @@ const ViewSingleEventPage = () => {
                   </motion.div>
                 )}
 
-                {activeTab === "rules" && (event.rules?.length > 0 || event.requirements?.length > 0) && (
+                {activeTab === "rules" && ((event.rules?.length ?? 0) > 0 || (event.requirements?.length ?? 0) > 0) && (
                   <motion.div
                     key="rules"
                     initial={{ opacity: 0, y: 10 }}
@@ -190,7 +213,7 @@ const ViewSingleEventPage = () => {
                     <div className="my-8 h-px w-full bg-white/[0.07]" />
 
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 px-1 sm:px-0">
-                      {event.rules?.length > 0 && (
+                      {(event.rules?.length ?? 0) > 0 && (
                         <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-purple-950/20 to-black p-6 sm:p-8 shadow-xl">
                           <div className="mb-6 flex items-center gap-4">
                             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/20 text-purple-400">
@@ -202,7 +225,7 @@ const ViewSingleEventPage = () => {
                         </div>
                       )}
                       
-                      {event.requirements?.length > 0 && (
+                      {(event.requirements?.length ?? 0) > 0 && (
                         <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-emerald-950/20 to-black p-6 sm:p-8 shadow-xl">
                           <div className="mb-6 flex items-center gap-4">
                             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400">
@@ -217,7 +240,7 @@ const ViewSingleEventPage = () => {
                   </motion.div>
                 )}
 
-                {activeTab === "mentors" && event.mentors?.length > 0 && (
+                {activeTab === "mentors" && (event.mentors?.length ?? 0) > 0 && (
                   <motion.div
                     key="mentors"
                     initial={{ opacity: 0, y: 10 }}
@@ -244,14 +267,14 @@ const ViewSingleEventPage = () => {
                     <div className="my-8 h-px w-full bg-white/[0.07]" />
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-1 sm:px-0">
-                      {event.mentors.map((mentor: any) => (
+                      {(event.mentors || []).map((mentor: any) => (
                         <PersonCard key={mentor._id} {...mentor} role="Mentor" />
                       ))}
                     </div>
                   </motion.div>
                 )}
 
-                {activeTab === "judges" && event.judges?.length > 0 && (
+                {activeTab === "judges" && (event.judges?.length ?? 0) > 0 && (
                   <motion.div
                     key="judges"
                     initial={{ opacity: 0, y: 10 }}
@@ -278,7 +301,7 @@ const ViewSingleEventPage = () => {
                     <div className="my-8 h-px w-full bg-white/[0.07]" />
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-1 sm:px-0">
-                      {event.judges.map((judge: any) => (
+                      {(event.judges || []).map((judge: any) => (
                         <PersonCard key={judge._id} {...judge} role="Judge" />
                       ))}
                     </div>
@@ -315,13 +338,13 @@ const ViewSingleEventPage = () => {
                   Closes: {formatDate(event.registrationEndAt)}
                 </BentoRow>
 
-                <BentoRow icon={<Users className="text-purple-400"/>} label="Team Size">
-                  2 - 4 Members
-                </BentoRow>
+                
 
+                {event.mentors && ((event.mentors?.length ?? 0) || 0) > 0 && (
                 <BentoRow icon={<Sparkles className="text-amber-400"/>} label="Mentors">
-                  {event.mentors?.length > 0 ? `${event.mentors.length}+ Expert Mentors` : "Mentors TBA"}
+                  {((event.mentors?.length ?? 0) || 0)}+ Expert Mentors
                 </BentoRow>
+                )}
 
               </div>
             </div>

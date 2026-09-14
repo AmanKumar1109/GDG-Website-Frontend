@@ -12,7 +12,7 @@ const UpcomingEvent = () => {
 
   // Lazy load more events when the last visible event comes into view
   useEffect(() => {
-    if (!isPending && !isError && data?.data?.length) {
+    if (!isPending && !isError && (data?.length ?? 0)) {
       const options = {
         root: null,
         threshold: 0.1,
@@ -22,10 +22,10 @@ const UpcomingEvent = () => {
         entries.forEach((entry) => {
           if (
             entry.isIntersecting &&
-            visibleCount < (Array.isArray(data) ? data.length : data.data?.length)
+            visibleCount < (data?.length ?? 0)
           ) {
             setVisibleCount((prev) =>
-              Math.min(prev + 3, (Array.isArray(data) ? data.length : data.data?.length) || 0),
+              Math.min(prev + 3, (data?.length ?? 0) || 0),
             );
           }
         });
@@ -38,7 +38,7 @@ const UpcomingEvent = () => {
     }
   }, [visibleCount, data, isPending, isError]);
 
-  const events = Array.isArray(data) ? data : data?.data || [];
+  const events = data || [];
   const displayEvents = events.slice(0, visibleCount);
 
   if (isLoading && isPending) {
