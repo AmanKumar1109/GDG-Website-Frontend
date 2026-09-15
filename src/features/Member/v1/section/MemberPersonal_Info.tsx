@@ -108,10 +108,12 @@ const MemberPersonal_Info = ({ isEdit, data, onChange }: MemberPersonalInfoProps
               readonly={!isEdit}
               placeholder="https://example.com/avatar.jpg"
             />
-            
+
             <div className="flex items-center gap-4">
               <div className="h-[1px] flex-1 bg-white/10" />
-              <span className="text-xs font-medium text-white/40 uppercase tracking-widest">or</span>
+              <span className="text-xs font-medium text-white/40 uppercase tracking-widest">
+                or
+              </span>
               <div className="h-[1px] flex-1 bg-white/10" />
             </div>
 

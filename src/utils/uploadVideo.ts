@@ -25,9 +25,7 @@ const uploadVideo = async (
     formData.append("upload_preset", uploadPreset);
 
     const cloudName =
-      import.meta.env.VITE_CLOUDINARY_CLOUD_NAME ||
-      import.meta.env.CLOUDINARY_CLOUD_NAME ||
-      "";
+      import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || import.meta.env.CLOUDINARY_CLOUD_NAME || "";
 
     const { data } = await axios.post<CloudinaryVideoResponse>(
       `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,

@@ -105,7 +105,11 @@ const BasicInformation = ({ form, update }: Props) => {
             >
               <option value="Select Visiblity">Select Visiblity</option>
               {EventVisibility_Constant.map((val) => {
-                return <option key={val} value={val}>{val}</option>;
+                return (
+                  <option key={val} value={val}>
+                    {val}
+                  </option>
+                );
               })}
             </Select>
           </div>

@@ -249,10 +249,10 @@ const MemberDetails = () => {
             text: "Failed to update member profile.",
             icon: "error",
             background: "#111116",
-            color: "#ffffff"
+            color: "#ffffff",
           });
-        }
-      }
+        },
+      },
     );
   };
 
@@ -316,9 +316,7 @@ const MemberDetails = () => {
     const current = formData || activeMember;
     if (!current) return;
     const url =
-      current.socialLinks?.portfolio ||
-      current.socialLinks?.website ||
-      current.socialLinks?.github;
+      current.socialLinks?.portfolio || current.socialLinks?.website || current.socialLinks?.github;
     if (url) {
       window.open(url, "_blank", "noopener,noreferrer");
     }
@@ -429,160 +427,146 @@ const MemberDetails = () => {
             </div>
           </header>
 
-        {/* Main Grid */}
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:grid-cols-[minmax(0,1fr)_410px] 2xl:gap-6">
-          {/* Left Column */}
-          <div className="min-w-0 space-y-5">
-            <MemberProfile />
+          {/* Main Grid */}
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:grid-cols-[minmax(0,1fr)_410px] 2xl:gap-6">
+            {/* Left Column */}
+            <div className="min-w-0 space-y-5">
+              <MemberProfile />
 
-            {/* Form inputs with isolated local buffered state for high performance */}
-            <MemberPersonal_Info
-              isEdit={isEdit}
-              data={displayData}
-              onChange={handleFieldChange}
-            />
+              {/* Form inputs with isolated local buffered state for high performance */}
+              <MemberPersonal_Info
+                isEdit={isEdit}
+                data={displayData}
+                onChange={handleFieldChange}
+              />
 
-            <MemberLocation
-              isEdit={isEdit}
-              data={displayData}
-              onChange={handleFieldChange}
-            />
+              <MemberLocation isEdit={isEdit} data={displayData} onChange={handleFieldChange} />
 
-            <MemberSocialLink
-              isEdit={isEdit}
-              data={displayData}
-              onChange={handleFieldChange}
-            />
+              <MemberSocialLink isEdit={isEdit} data={displayData} onChange={handleFieldChange} />
 
-            <Section
-              title="Skills & Interests"
-              description="Technical skills and areas of interest"
-              icon={<Sparkles size={17} />}
-            >
-              <div className="grid gap-6 sm:grid-cols-2">
-                <TagEditor
-                  label="Skills"
-                  values={displayData?.skills ?? []}
-                  variant="green"
-                  editable={isEdit}
-                  onChange={(values: string[]) => handleFieldChange({ skills: values })}
-                />
-                <TagEditor
-                  label="Areas of Interest"
-                  values={displayData?.areaOfInterest ?? []}
-                  variant="purple"
-                  editable={isEdit}
-                  onChange={(values: string[]) =>
-                    handleFieldChange({ areaOfInterest: values })
-                  }
-                />
-              </div>
-            </Section>
-
-            <PermissionChecker permissionName="permission:update" permissionAction="update">
               <Section
-                title="Assign Permissions"
-                description="Role-based access permissions"
-                icon={<ShieldCheck size={17} />}
+                title="Skills & Interests"
+                description="Technical skills and areas of interest"
+                icon={<Sparkles size={17} />}
               >
-                <PermissionManager
-                  isEdit={isEdit}
-                  permissions={AVAILABLE_PERMISSIONS_CONSTANT}
-                  onPermissionsChange={(newPerms) => {
-                    setUpdatedPermissions(newPerms);
-                  }}
-                />
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <TagEditor
+                    label="Skills"
+                    values={displayData?.skills ?? []}
+                    variant="green"
+                    editable={isEdit}
+                    onChange={(values: string[]) => handleFieldChange({ skills: values })}
+                  />
+                  <TagEditor
+                    label="Areas of Interest"
+                    values={displayData?.areaOfInterest ?? []}
+                    variant="purple"
+                    editable={isEdit}
+                    onChange={(values: string[]) => handleFieldChange({ areaOfInterest: values })}
+                  />
+                </div>
               </Section>
-            </PermissionChecker>
 
-            <InternalNote
-              isEdit={isEdit}
-              data={displayData}
-              onChange={handleFieldChange}
-            />
+              <PermissionChecker permissionName="permission:update" permissionAction="update">
+                <Section
+                  title="Assign Permissions"
+                  description="Role-based access permissions"
+                  icon={<ShieldCheck size={17} />}
+                >
+                  <PermissionManager
+                    isEdit={isEdit}
+                    permissions={AVAILABLE_PERMISSIONS_CONSTANT}
+                    onPermissionsChange={(newPerms) => {
+                      setUpdatedPermissions(newPerms);
+                    }}
+                  />
+                </Section>
+              </PermissionChecker>
+
+              <InternalNote isEdit={isEdit} data={displayData} onChange={handleFieldChange} />
+            </div>
+
+            {/* Right Column */}
+            <aside className="min-w-0 space-y-5">
+              <Section
+                title="Quick Actions"
+                description="Common actions for this member"
+                icon={<Zap size={17} />}
+              >
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <PermissionChecker permissionName="email:send" permissionAction="create">
+                    <button
+                      type="button"
+                      onClick={sendEmail}
+                      className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
+                    >
+                      <Send size={16} className="text-white/45 group-hover:text-green-400" />
+                      <div>
+                        <div className="text-[11px] font-medium text-white/75">Send Email</div>
+                        <div className="mt-1 text-[9px] text-white/30">Direct email inquiry</div>
+                      </div>
+                    </button>
+                  </PermissionChecker>
+
+                  <button
+                    type="button"
+                    onClick={copyEmail}
+                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
+                  >
+                    <Copy size={16} className="text-white/45 group-hover:text-blue-400" />
+                    <div>
+                      <div className="text-[11px] font-medium text-white/75">
+                        {copySuccess ? "Copied!" : "Copy Email"}
+                      </div>
+                      <div className="mt-1 text-[9px] text-white/30">Copy address to clipboard</div>
+                    </div>
+                  </button>
+
+                  <PermissionChecker permissionName="member:update" permissionAction="update">
+                    <button
+                      type="button"
+                      onClick={startEditing}
+                      className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
+                    >
+                      <Pencil size={16} className="text-white/45 group-hover:text-blue-400" />
+                      <div>
+                        <div className="text-[11px] font-medium text-white/75">Edit Member</div>
+                        <div className="mt-1 text-[9px] text-white/30">Modify account fields</div>
+                      </div>
+                    </button>
+                  </PermissionChecker>
+
+                  <button
+                    type="button"
+                    onClick={downloadMemberData}
+                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
+                  >
+                    <Download size={16} className="text-white/45 group-hover:text-yellow-400" />
+                    <div>
+                      <div className="text-[11px] font-medium text-white/75">Export Data</div>
+                      <div className="mt-1 text-[9px] text-white/30">Download profile JSON</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={openPortfolio}
+                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027] sm:col-span-2"
+                  >
+                    <Globe2 size={16} className="text-white/45 group-hover:text-purple-400" />
+                    <div>
+                      <div className="text-[11px] font-medium text-white/75">View Portfolio</div>
+                      <div className="mt-1 text-[9px] text-white/30">
+                        Open member's public links
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </Section>
+            </aside>
           </div>
-
-          {/* Right Column */}
-          <aside className="min-w-0 space-y-5">
-            <Section
-              title="Quick Actions"
-              description="Common actions for this member"
-              icon={<Zap size={17} />}
-            >
-              <div className="grid gap-2 sm:grid-cols-2">
-                <PermissionChecker permissionName="email:send" permissionAction="create">
-                  <button
-                    type="button"
-                    onClick={sendEmail}
-                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
-                  >
-                    <Send size={16} className="text-white/45 group-hover:text-green-400" />
-                    <div>
-                      <div className="text-[11px] font-medium text-white/75">Send Email</div>
-                      <div className="mt-1 text-[9px] text-white/30">Direct email inquiry</div>
-                    </div>
-                  </button>
-                </PermissionChecker>
-
-                <button
-                  type="button"
-                  onClick={copyEmail}
-                  className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
-                >
-                  <Copy size={16} className="text-white/45 group-hover:text-blue-400" />
-                  <div>
-                    <div className="text-[11px] font-medium text-white/75">
-                      {copySuccess ? "Copied!" : "Copy Email"}
-                    </div>
-                    <div className="mt-1 text-[9px] text-white/30">Copy address to clipboard</div>
-                  </div>
-                </button>
-
-                <PermissionChecker permissionName="member:update" permissionAction="update">
-                  <button
-                    type="button"
-                    onClick={startEditing}
-                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
-                  >
-                    <Pencil size={16} className="text-white/45 group-hover:text-blue-400" />
-                    <div>
-                      <div className="text-[11px] font-medium text-white/75">Edit Member</div>
-                      <div className="mt-1 text-[9px] text-white/30">Modify account fields</div>
-                    </div>
-                  </button>
-                </PermissionChecker>
-
-                <button
-                  type="button"
-                  onClick={downloadMemberData}
-                  className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
-                >
-                  <Download size={16} className="text-white/45 group-hover:text-yellow-400" />
-                  <div>
-                    <div className="text-[11px] font-medium text-white/75">Export Data</div>
-                    <div className="mt-1 text-[9px] text-white/30">Download profile JSON</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={openPortfolio}
-                  className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027] sm:col-span-2"
-                >
-                  <Globe2 size={16} className="text-white/45 group-hover:text-purple-400" />
-                  <div>
-                    <div className="text-[11px] font-medium text-white/75">View Portfolio</div>
-                    <div className="mt-1 text-[9px] text-white/30">
-                      Open member's public links
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </Section>
-          </aside>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
     </PermissionChecker>
   );
 };

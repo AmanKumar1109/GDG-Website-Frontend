@@ -135,14 +135,17 @@ const MembersDashboardPage = () => {
     setSelectedIds([]);
   }, []);
 
-  const handleSelectAll = useCallback((checked: boolean) => {
-    if (!visibleMemberIds.length) return;
-    if (checked) {
-      setSelectedIds((prev) => Array.from(new Set([...prev, ...visibleMemberIds])));
-    } else {
-      setSelectedIds((prev) => prev.filter((id) => !visibleMemberIds.includes(id)));
-    }
-  }, [visibleMemberIds]);
+  const handleSelectAll = useCallback(
+    (checked: boolean) => {
+      if (!visibleMemberIds.length) return;
+      if (checked) {
+        setSelectedIds((prev) => Array.from(new Set([...prev, ...visibleMemberIds])));
+      } else {
+        setSelectedIds((prev) => prev.filter((id) => !visibleMemberIds.includes(id)));
+      }
+    },
+    [visibleMemberIds],
+  );
 
   const handleSelectRow = useCallback((id: string, checked: boolean) => {
     setSelectedIds((prev) => {
@@ -153,13 +156,16 @@ const MembersDashboardPage = () => {
 
   const handleClearSelection = useCallback(() => setSelectedIds([]), []);
 
-  const handleDeleteMember = useCallback((id: string) => {
-    if (window.confirm("Delete this member?")) {
-      deleteMember(id);
-      if (selectedMemberId === id) setSelectedMemberId(null);
-      setSelectedIds((prev) => prev.filter((sid) => sid !== id));
-    }
-  }, [deleteMember, selectedMemberId]);
+  const handleDeleteMember = useCallback(
+    (id: string) => {
+      if (window.confirm("Delete this member?")) {
+        deleteMember(id);
+        if (selectedMemberId === id) setSelectedMemberId(null);
+        setSelectedIds((prev) => prev.filter((sid) => sid !== id));
+      }
+    },
+    [deleteMember, selectedMemberId],
+  );
 
   const handleDeleteSelected = useCallback(() => {
     if (!selectedIds.length) return;
@@ -169,18 +175,27 @@ const MembersDashboardPage = () => {
     }
   }, [selectedIds, deleteMember]);
 
-  const handleViewMember = useCallback((member: fetchMembersType) => {
-    setSelectedMemberId(member._id);
-    navigate(`/member/profile/${member.Slug}`);
-  }, [navigate]);
+  const handleViewMember = useCallback(
+    (member: fetchMembersType) => {
+      setSelectedMemberId(member._id);
+      navigate(`/member/profile/${member.Slug}`);
+    },
+    [navigate],
+  );
 
-  const handleChangeRole = useCallback((id: string, role: string) => {
-    updateMember(id, { primaryRole: role });
-  }, [updateMember]);
+  const handleChangeRole = useCallback(
+    (id: string, role: string) => {
+      updateMember(id, { primaryRole: role });
+    },
+    [updateMember],
+  );
 
-  const handleChangeStatus = useCallback((id: string, status: memberStatusType) => {
-    updateMember(id, { membershipStatus: status });
-  }, [updateMember]);
+  const handleChangeStatus = useCallback(
+    (id: string, status: memberStatusType) => {
+      updateMember(id, { membershipStatus: status });
+    },
+    [updateMember],
+  );
 
   return (
     <main className="w-full min-w-0 px-4 py-5 text-white sm:px-6 lg:px-8">

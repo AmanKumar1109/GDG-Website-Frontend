@@ -46,10 +46,7 @@ export const useCreateEventMutation = () => {
 
   return useMutation<CreateEventResponse, Error, CreateEventPayload>({
     mutationFn: async (eventData) => {
-      const response = await api.post<CreateEventResponse>(
-        "/api/v1/create/newEvent",
-        eventData
-      );
+      const response = await api.post<CreateEventResponse>("/api/v1/create/newEvent", eventData);
       return response.data;
     },
     onSuccess: () => {

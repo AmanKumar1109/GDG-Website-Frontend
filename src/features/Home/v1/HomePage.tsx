@@ -2,7 +2,6 @@ import { lazy, Suspense } from "react";
 import HeroSec from "./Section/HeroSec";
 import AboutUsSec from "./Section/AboutUsSec";
 import WhatWeDoSec from "./Section/WhatWeDoSec";
-import CommunitySec from "./Section/CommunitySec";
 import OrganizersSec from "./Section/OrganizersSec";
 import SponsorsSec from "./Section/SponsorsSec";
 import TestimonialsSec from "./Section/TestimonialsSec";
@@ -36,7 +35,7 @@ const HomePage = () => {
 
       <TestimonialsSec />
 
-      <CommunitySec />
+      {/* <CommunitySec /> */}
     </div>
   );
 };

@@ -62,14 +62,16 @@ const ForgotPasswordLeft = () => {
           setStep(2);
           Swal.fire({
             title: "Code Dispatched",
-            text: err.response?.data?.message || "Verification code dispatched. Check your inbox to proceed.",
+            text:
+              err.response?.data?.message ||
+              "Verification code dispatched. Check your inbox to proceed.",
             icon: "info",
             background: "#111116",
             color: "#ffffff",
             confirmButtonColor: "#34A853",
           });
         },
-      }
+      },
     );
   };
 
@@ -97,7 +99,9 @@ const ForgotPasswordLeft = () => {
         onError: (err: any) => {
           Swal.fire({
             title: "Reset Notice",
-            text: err.response?.data?.message || "Password updated or simulation verified. You can now login.",
+            text:
+              err.response?.data?.message ||
+              "Password updated or simulation verified. You can now login.",
             icon: "success",
             background: "#111116",
             color: "#ffffff",
@@ -106,7 +110,7 @@ const ForgotPasswordLeft = () => {
             navigate("/login");
           });
         },
-      }
+      },
     );
   };
 
@@ -218,7 +222,10 @@ const ForgotPasswordLeft = () => {
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="mb-1.5 block text-xs font-medium text-white/75">
+            <label
+              htmlFor="confirmPassword"
+              className="mb-1.5 block text-xs font-medium text-white/75"
+            >
               Confirm New Password
             </label>
             <input

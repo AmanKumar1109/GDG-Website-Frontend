@@ -84,11 +84,7 @@ export const AllTeam: React.FC<AllTeamProps> = ({
   const socialTeam = useMemo(
     () =>
       searchedMembers.filter(
-        (m) =>
-          !isOrganizer(m.role) &&
-          !isTech(m.role) &&
-          !isDesign(m.role) &&
-          isSocial(m.role),
+        (m) => !isOrganizer(m.role) && !isTech(m.role) && !isDesign(m.role) && isSocial(m.role),
       ),
     [searchedMembers],
   );
@@ -96,34 +92,24 @@ export const AllTeam: React.FC<AllTeamProps> = ({
   const coreTeam = useMemo(
     () =>
       searchedMembers.filter(
-        (m) =>
-          !isOrganizer(m.role) &&
-          !isTech(m.role) &&
-          !isDesign(m.role) &&
-          !isSocial(m.role),
+        (m) => !isOrganizer(m.role) && !isTech(m.role) && !isDesign(m.role) && !isSocial(m.role),
       ),
     [searchedMembers],
   );
 
   // Determine which sections to render based on selectedCategory
   const showOrganizers =
-    (selectedCategory === "all" || selectedCategory === "organizer") &&
-    organizers.length > 0;
+    (selectedCategory === "all" || selectedCategory === "organizer") && organizers.length > 0;
   const showTech =
-    (selectedCategory === "all" || selectedCategory === "tech") &&
-    techTeam.length > 0;
+    (selectedCategory === "all" || selectedCategory === "tech") && techTeam.length > 0;
   const showDesign =
-    (selectedCategory === "all" || selectedCategory === "design") &&
-    designTeam.length > 0;
+    (selectedCategory === "all" || selectedCategory === "design") && designTeam.length > 0;
   const showSocial =
-    (selectedCategory === "all" || selectedCategory === "social") &&
-    socialTeam.length > 0;
+    (selectedCategory === "all" || selectedCategory === "social") && socialTeam.length > 0;
   const showCore =
-    (selectedCategory === "all" || selectedCategory === "core") &&
-    coreTeam.length > 0;
+    (selectedCategory === "all" || selectedCategory === "core") && coreTeam.length > 0;
 
-  const hasAnyResults =
-    showOrganizers || showTech || showDesign || showSocial || showCore;
+  const hasAnyResults = showOrganizers || showTech || showDesign || showSocial || showCore;
 
   return (
     <div className="relative pb-24">

@@ -107,52 +107,27 @@ const ViewSingleEventPage = () => {
         <HIGHLIGHTS_Sec event={event} />
       </div>
 
-      {/* ================= MAIN CONTENT GRID ================= */}
-      <section className="mt-4 sm:mt-10 lg:mt-16 w-full max-w-7xl mx-auto pb-10 sm:pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
-          
-          {/* LEFT COLUMN: Dynamic Content Based on Tabs */}
-          <div className="lg:col-span-8 flex flex-col pb-16 min-h-[400px] sm:min-h-[600px]">
-            
-            {/* Tabs Selector */}
-            <div className="flex gap-4 sm:gap-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] border-b border-white/10 mb-6 sm:mb-8 relative px-1">
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative py-4 text-sm sm:text-base font-bold whitespace-nowrap transition-colors duration-300 ${
-                    activeTab === tab.id 
-                      ? 'text-white' 
-                      : 'text-white/50 hover:text-white/90'
-                  }`}
-                >
-                  {tab.label}
-                  {activeTab === tab.id && (
-                    <motion.div
-                      layoutId="activeTabIndicator"
-                      className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)]"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
+        {/* =====================================================
+            ABOUT + EVENT DETAILS (Responsive Flex Layout)
+        ===================================================== */}
 
-            {/* Tab Content Area */}
-            <div className="relative w-full">
-              <AnimatePresence mode="wait">
-                {activeTab === "about" && (
-                  <motion.div
-                    key="about"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="prose prose-invert max-w-none"
-                  >
-                     <AboutEvent event={event} />
-                  </motion.div>
-                )}
+        <section
+          id="overview"
+          className="mt-10 flex flex-col-reverse  gap-3 lg:flex-row lg:items-start lg:gap-[2vw]"
+        >
+          {/* About Section */}
+          <div className="w-full lg:w-[70%] flex flex-col gap-8">
+            <AboutEvent event={event} />
+
+            {/* Timeline Section */}
+            {event.timeline && event.timeline.length > 0 && (
+              <div className="rounded-2xl border border-white/[0.08] bg-[#0b0d0e] p-6 sm:p-8">
+                <h3 className="text-2xl font-semibold tracking-tight text-white mb-6">
+                  Event Timeline
+                </h3>
+                <Timeline timeline={event.timeline} />
+              </div>
+            )}
 
                 {activeTab === "timeline" && event.timeline && event.timeline.length > 0 && (
                   <motion.div
@@ -186,21 +161,11 @@ const ViewSingleEventPage = () => {
                   </motion.div>
                 )}
 
-                {activeTab === "rules" && ((event.rules?.length ?? 0) > 0 || (event.requirements?.length ?? 0) > 0) && (
-                  <motion.div
-                    key="rules"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-full py-4 sm:py-8 px-4 sm:px-8 rounded-3xl border border-white/10 bg-[#0a0a0a] shadow-2xl"
-                  >
-                    <div className="max-w-3xl mx-auto sm:mx-0 mb-8">
-                      <div className="mb-3 flex items-center gap-2">
-                        <ShieldCheck size={13} strokeWidth={1.8} className="text-[#34A853]" />
-                        <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-[#34A853]">
-                          Important Guidelines
-                        </span>
+                {event.requirements?.length > 0 && (
+                  <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#111315] via-[#0b0d0e] to-[#070808] p-6">
+                    <div className="mb-6 flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#34A853]/10 text-[#34A853]">
+                        <BookOpen size={20} />
                       </div>
                       <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-[1.875rem] sm:leading-tight">
                         Rules & Requirements

@@ -1,16 +1,7 @@
-import React, { useRef } from "react";
-import {
-  Sparkles,
-  Star,
-  Quote,
-  CheckCircle2,
-  Calendar,
-} from "lucide-react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import React from "react";
+import { Star, Quote, CheckCircle2, Calendar } from "lucide-react";
+import { FaLinkedin } from "react-icons/fa";
+import { ScrollReveal } from "../../../../Components/ScrollReveal";
 
 export interface Testimonial {
   id: string;
@@ -18,288 +9,399 @@ export interface Testimonial {
   role: string;
   organization: string;
   avatar: string;
-  category: "devfest" | "speakers" | "students" | "wtm";
-  categoryLabel: string;
-  eventBadge: string;
+  badge: string;
+  badgeBg: string;
+  badgeText: string;
   rating: number;
   quote: string;
   year: string;
-  accentColor: string;
+  linkedinUrl?: string;
 }
 
-const INITIAL_TESTIMONIALS: Testimonial[] = [
+const COLUMN_1_TESTIMONIALS: Testimonial[] = [
   {
     id: "t-1",
-    name: "Ananya Sharma",
-    role: "Frontend Engineer",
-    organization: "Swiggy (Ex-BIT Mesra)",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80",
-    category: "students",
-    categoryLabel: "Student & Career",
-    eventBadge: "DevFest Ranchi Attendee",
-    rating: 5,
-    quote:
-      "GDG Ranchi was the real turning point in my tech journey. Attending DevFest codelabs gave me deep practical clarity on Web Vitals and React architecture that directly helped me crack my engineering interviews.",
-    year: "2024",
-    accentColor: "#4285F4",
-  },
-  {
-    id: "t-2",
     name: "Rahul Verma",
     role: "Google Developer Expert (GDE)",
     organization: "Cloud & Distributed Systems",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80",
-    category: "speakers",
-    categoryLabel: "Speaker & Mentor",
-    eventBadge: "Keynote Speaker",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80",
+    badge: "KEYNOTE SPEAKER",
+    badgeBg: "bg-[#FBBC04]",
+    badgeText: "text-black",
     rating: 5,
     quote:
       "Speaking at GDG Ranchi was pure inspiration. The developers asked razor-sharp questions about Vertex AI, microservices, and Kubernetes at scale. The production standards and energy are on par with global developer conferences.",
     year: "2024",
-    accentColor: "#34A853",
+    linkedinUrl: "https://linkedin.com",
   },
   {
-    id: "t-3",
-    name: "Priya Kumari",
-    role: "WTM Ambassador & Android Dev",
-    organization: "Women Techmakers Ranchi",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=256&q=80",
-    category: "wtm",
-    categoryLabel: "Women Techmakers",
-    eventBadge: "WTM Lead & Organizer",
-    rating: 5,
-    quote:
-      "GDG Ranchi provides an empowering, welcoming sanctuary where women technologists don't just participate—they headline keynotes, lead technical workshops, and launch open-source initiatives.",
-    year: "2024",
-    accentColor: "#EA4335",
-  },
-  {
-    id: "t-4",
+    id: "t-2",
     name: "Aman Kumar Singh",
     role: "AI/ML Researcher",
     organization: "IIIT Ranchi",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=256&q=80",
-    category: "devfest",
-    categoryLabel: "DevFest",
-    eventBadge: "AI Hackathon Winner",
+    avatar:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=256&q=80",
+    badge: "AI HACKATHON WINNER",
+    badgeBg: "bg-[#4285F4]",
+    badgeText: "text-white",
     rating: 5,
     quote:
       "Building our multimodal accessibility project in the 36-hour GDG Hackathon was exhilarating. The on-site mentors gave us invaluable feedback on Gemini Flash integrations that helped us win 1st place.",
     year: "2024",
-    accentColor: "#FBBC04",
+    linkedinUrl: "https://linkedin.com",
   },
   {
-    id: "t-5",
+    id: "t-3",
     name: "Sneha Roy",
     role: "Full Stack Engineer",
     organization: "Zomato",
-    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=256&q=80",
-    category: "students",
-    categoryLabel: "Student & Career",
-    eventBadge: "Community Alum",
+    avatar:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=256&q=80",
+    badge: "STUDENT TO ENGINEER",
+    badgeBg: "bg-white",
+    badgeText: "text-black",
     rating: 5,
     quote:
       "From attending my first meetup in Ranchi back in 2022 to landing my dream role, the code reviews, open-source sprints, and peer network in this community gave me the real-world confidence I needed.",
     year: "2023",
-    accentColor: "#4285F4",
+    linkedinUrl: "https://linkedin.com",
   },
   {
-    id: "t-6",
+    id: "t-4",
     name: "Dr. Arvind Pathak",
     role: "Department Chair (CSE)",
     organization: "Jharkhand Tech University",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=256&q=80",
-    category: "speakers",
-    categoryLabel: "Speaker & Mentor",
-    eventBadge: "Academic Partner",
+    avatar:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=256&q=80",
+    badge: "ACADEMIC PARTNER",
+    badgeBg: "bg-[#FBBC04]",
+    badgeText: "text-black",
     rating: 5,
     quote:
       "GDG Ranchi plays a pivotal role bridging traditional academia and real-world tech industry practices. Thousands of our undergraduate students have gained production-grade cloud and AI skills.",
     year: "2024",
-    accentColor: "#34A853",
+    linkedinUrl: "https://linkedin.com",
   },
 ];
 
-const TestimonialCard = ({ item }: { item: Testimonial }) => (
-  <div className="group relative flex flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#0c0c11] p-6 sm:p-8 backdrop-blur-md transition-all duration-300 hover:border-white/25 hover:bg-[#111118] hover:shadow-[0_16px_40px_rgba(0,0,0,0.8)] w-[320px] sm:w-[410px] shrink-0">
-    {/* Subtle top accent line */}
-    <div
-      className="absolute top-0 left-8 right-8 h-[2px] rounded-full opacity-60 transition-opacity group-hover:opacity-100"
-      style={{ backgroundColor: item.accentColor }}
-    />
+const COLUMN_2_TESTIMONIALS: Testimonial[] = [
+  {
+    id: "t-5",
+    name: "Priya Kumari",
+    role: "WTM Ambassador & Android Dev",
+    organization: "Women Techmakers Ranchi",
+    avatar:
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=256&q=80",
+    badge: "WTM LEAD & ORGANIZER",
+    badgeBg: "bg-[#EA4335]",
+    badgeText: "text-white",
+    rating: 5,
+    quote:
+      "GDG Ranchi provides an empowering, welcoming sanctuary where women technologists don't just participate—they headline keynotes, lead technical workshops, and launch open-source initiatives.",
+    year: "2024",
+    linkedinUrl: "https://linkedin.com",
+  },
+  {
+    id: "t-6",
+    name: "Ananya Sharma",
+    role: "Frontend Engineer",
+    organization: "Swiggy (Ex-BIT Mesra)",
+    avatar:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80",
+    badge: "COMMUNITY ALUM",
+    badgeBg: "bg-[#34A853]",
+    badgeText: "text-white",
+    rating: 5,
+    quote:
+      "GDG Ranchi was the real turning point in my tech journey. Attending DevFest codelabs gave me deep practical clarity on Web Vitals and React architecture that directly helped me crack my engineering interviews.",
+    year: "2024",
+    linkedinUrl: "https://linkedin.com",
+  },
+  {
+    id: "t-7",
+    name: "Harsh Vardhan",
+    role: "DevOps & SRE Engineer",
+    organization: "Razorpay",
+    avatar:
+      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=256&q=80",
+    badge: "CLOUD STUDY JAM LEAD",
+    badgeBg: "bg-[#4285F4]",
+    badgeText: "text-white",
+    rating: 5,
+    quote:
+      "The hands-on Google Cloud Study Jams organized by GDG Ranchi gave me direct enterprise exposure. Earning my Associate Cloud Engineer certification was a direct result of these workshops.",
+    year: "2024",
+    linkedinUrl: "https://linkedin.com",
+  },
+  {
+    id: "t-8",
+    name: "Shreya Mukherjee",
+    role: "Flutter Architect",
+    organization: "FlutterFlow Partner",
+    avatar:
+      "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&w=256&q=80",
+    badge: "WORKSHOP SPEAKER",
+    badgeBg: "bg-[#34A853]",
+    badgeText: "text-white",
+    rating: 5,
+    quote:
+      "Mentoring over 300+ students during DevFest's cross-platform app hackathon was unforgettable. Seeing complete beginners deploy live Flutter applications in a single weekend is what GDG is all about.",
+    year: "2024",
+    linkedinUrl: "https://linkedin.com",
+  },
+];
+
+const COLUMN_3_TESTIMONIALS: Testimonial[] = [
+  {
+    id: "t-9",
+    name: "Abhishek Raj",
+    role: "Core Builder & Engineer",
+    organization: "Jharkhand Open Source",
+    avatar:
+      "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=256&q=80",
+    badge: "REGIONAL BUILDER",
+    badgeBg: "bg-[#FBBC04]",
+    badgeText: "text-black",
+    rating: 5,
+    quote:
+      "We built regional open-source repositories and connected student contributors from every college in Ranchi. GDG Ranchi created the collaborative momentum we needed to scale local tech innovation.",
+    year: "2024",
+    linkedinUrl: "https://linkedin.com",
+  },
+  {
+    id: "t-10",
+    name: "Neha Sen",
+    role: "Data Scientist",
+    organization: "Microsoft",
+    avatar:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=256&q=80",
+    badge: "MENTOR & PANELIST",
+    badgeBg: "bg-[#4285F4]",
+    badgeText: "text-white",
+    rating: 5,
+    quote:
+      "Mentoring ambitious young women and university builders at GDG Ranchi is a privilege. The community's passion for generative AI, ethical models, and modern machine learning frameworks is world-class.",
+    year: "2024",
+    linkedinUrl: "https://linkedin.com",
+  },
+  {
+    id: "t-11",
+    name: "Rohit Choudhary",
+    role: "Full-Stack Builder",
+    organization: "BIT Sindri",
+    avatar:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=256&q=80",
+    badge: "COMMUNITY SCHOLAR",
+    badgeBg: "bg-white",
+    badgeText: "text-black",
+    rating: 5,
+    quote:
+      "Traveling from Sindri to attend DevFest Ranchi was the best investment I ever made. The networking sessions helped me find my co-founder and connected us directly with early angel investors.",
+    year: "2023",
+    linkedinUrl: "https://linkedin.com",
+  },
+  {
+    id: "t-12",
+    name: "Tanvi Gupta",
+    role: "Cloud Architect",
+    organization: "Certified GCP Architect",
+    avatar:
+      "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=256&q=80",
+    badge: "CLOUD INNOVATOR",
+    badgeBg: "bg-[#EA4335]",
+    badgeText: "text-white",
+    rating: 5,
+    quote:
+      "The deep-dive technical workshops on serverless architectures and Google Kubernetes Engine gave me the exact hands-on experience needed for enterprise infrastructure design.",
+    year: "2024",
+    linkedinUrl: "https://linkedin.com",
+  },
+];
+
+const TestimonialCard: React.FC<{ item: Testimonial }> = ({ item }) => (
+  <div className="group relative flex flex-col justify-between p-6 rounded-2xl border-2 border-white/10 bg-[#09090d]/95 hover:border-[#FBBC04] transition-all duration-300 hover:shadow-[0_0_35px_rgba(251,188,4,0.18)] hover:-translate-y-1 backdrop-blur-md overflow-hidden shrink-0">
+    {/* Subtle inner hover gradient */}
+    <div className="absolute inset-0 bg-gradient-to-tr from-[#FBBC04]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
     <div>
-      {/* Badge & Year */}
-      <div className="flex items-center justify-between gap-2">
+      {/* Header: Devfest-style Badge & Year */}
+      <div className="flex items-center justify-between gap-2 mb-3.5">
         <span
-          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide"
-          style={{
-            backgroundColor: `${item.accentColor}18`,
-            color: item.accentColor,
-            border: `1px solid ${item.accentColor}33`,
-          }}
+          className={`inline-block ${item.badgeBg} ${item.badgeText} border-2 border-black rounded-full px-3 py-0.5 text-[10px] font-black tracking-wider uppercase shadow-[2px_2px_0_0_#000]`}
         >
-          {item.eventBadge}
+          {item.badge}
         </span>
-
-        <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-white/40">
           <Calendar size={12} />
           {item.year}
         </span>
       </div>
 
-      {/* Stars */}
-      <div className="mt-4 flex items-center gap-1 text-[#FBBC04]">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Star
-            key={i}
-            size={14}
-            className={i < item.rating ? "fill-[#FBBC04] text-[#FBBC04]" : "text-gray-600"}
-          />
+      {/* 5-Star Rating */}
+      <div className="flex items-center gap-1 text-[#FBBC04] mb-3">
+        {Array.from({ length: item.rating }).map((_, i) => (
+          <Star key={i} size={13} className="fill-[#FBBC04] text-[#FBBC04]" />
         ))}
       </div>
 
-      {/* Quote */}
-      <div className="relative mt-4">
+      {/* Quote with quote icon accent */}
+      <div className="relative">
         <Quote
-          size={28}
-          className="absolute -left-1 -top-2 opacity-15 transition-opacity group-hover:opacity-30"
-          style={{ color: item.accentColor }}
+          size={20}
+          className="absolute -left-1 -top-1 opacity-20 text-[#FBBC04] group-hover:opacity-40 transition-opacity"
         />
-        <p className="relative z-10 text-sm sm:text-[15px] leading-relaxed text-gray-200">
+        <p className="relative z-10 text-xs sm:text-sm leading-relaxed text-gray-300 group-hover:text-white transition-colors pl-3.5">
           "{item.quote}"
         </p>
       </div>
     </div>
 
-    {/* Author info */}
-    <div className="mt-6 flex items-center justify-between border-t border-white/[0.08] pt-5">
-      <div className="flex items-center gap-3.5">
-        <div className="relative p-[1.5px] rounded-full bg-gradient-to-tr from-[#4285F4] via-[#EA4335] to-[#34A853]">
+    {/* Author Footer */}
+    <div className="mt-5 flex items-center justify-between pt-3.5 border-t border-white/[0.08]">
+      <div className="flex items-center gap-2.5 min-w-0">
+        <div className="relative p-[1.5px] rounded-full bg-gradient-to-tr from-[#4285F4] via-[#EA4335] to-[#34A853] shrink-0">
           <img
             src={item.avatar}
             alt={item.name}
-            className="h-11 w-11 rounded-full object-cover"
+            className="h-9 w-9 rounded-full object-cover"
             loading="lazy"
           />
         </div>
-        <div>
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <h4 className="text-sm font-bold text-white transition-colors group-hover:text-[#8AB4F8]">
+            <h4 className="text-xs sm:text-sm font-bold text-white transition-colors group-hover:text-[#FBBC04] truncate">
               {item.name}
             </h4>
-            <span title="Verified Member" className="inline-flex">
-              <CheckCircle2 size={15} className="text-[#34A853] shrink-0" />
-            </span>
+            <CheckCircle2 size={13} className="text-[#34A853] shrink-0" />
           </div>
-          <p className="text-xs text-gray-400 mt-0.5">
-            {item.role} • {item.organization}
+          <p className="text-[11px] text-gray-400 truncate">
+            {item.role} • <span className="text-white/70">{item.organization}</span>
           </p>
         </div>
       </div>
+
+      {item.linkedinUrl && (
+        <a
+          href={item.linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white/30 hover:text-[#0A66C2] transition-colors p-1.5 shrink-0"
+          title="LinkedIn Profile"
+        >
+          <FaLinkedin size={15} />
+        </a>
+      )}
     </div>
   </div>
 );
 
 export const TestimonialsSec: React.FC = () => {
-  const containerRef = useRef<HTMLElement>(null);
-  const marqueeTrack1Ref = useRef<HTMLDivElement>(null);
-  const marqueeTrack2Ref = useRef<HTMLDivElement>(null);
-  const tween1Ref = useRef<gsap.core.Tween | null>(null);
-  const tween2Ref = useRef<gsap.core.Tween | null>(null);
-
-  const testimonials = INITIAL_TESTIMONIALS;
-
-  useGSAP(
-    () => {
-      // Top row scrolls left slowly and smoothly
-      if (marqueeTrack1Ref.current) {
-        tween1Ref.current = gsap.fromTo(
-          marqueeTrack1Ref.current,
-          { xPercent: 0 },
-          { xPercent: -50, ease: "none", duration: 95, repeat: -1 }
-        );
-      }
-
-      // Bottom row scrolls right slowly and smoothly
-      if (marqueeTrack2Ref.current) {
-        tween2Ref.current = gsap.fromTo(
-          marqueeTrack2Ref.current,
-          { xPercent: -50 },
-          { xPercent: 0, ease: "none", duration: 100, repeat: -1 }
-        );
-      }
-    },
-    { scope: containerRef }
-  );
-
-  const handleMouseEnter = () => {
-    tween1Ref.current?.pause();
-    tween2Ref.current?.pause();
-  };
-
-  const handleMouseLeave = () => {
-    tween1Ref.current?.resume();
-    tween2Ref.current?.resume();
-  };
-
   return (
     <section
-      ref={containerRef}
-      className="relative overflow-x-clip bg-[#060608] py-24 sm:py-32 text-white"
+      id="testimonials"
+      className="relative overflow-x-clip bg-black/20 px-5 py-20 sm:px-8 sm:py-24 md:px-12 lg:px-[8%] lg:py-[10vh] xl:px-[10%] text-white selection:bg-[#FBBC04]/30"
     >
-      <div className="pointer-events-none absolute left-1/3 top-1/4 h-[550px] w-[550px] -translate-x-1/2 rounded-full bg-[#4285F4]/[0.06] blur-[160px]" />
-      <div className="pointer-events-none absolute right-10 bottom-10 h-[450px] w-[450px] rounded-full bg-[#34A853]/[0.06] blur-[150px]" />
+      {/* Top subtle divider matching SponsorsSec */}
+      <div className="mb-14 sm:mb-16 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-16 flex flex-col items-center text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-2 text-xs font-semibold uppercase tracking-widest text-white/80 backdrop-blur">
-            <Sparkles size={16} className="text-[#FBBC04]" />
-            COMMUNITY VOICES & STORIES
-          </span>
-
-          <h2 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
-            Loved by Developers, <br className="hidden sm:block" />
-            <span className="bg-gradient-to-r from-[#4285F4] via-[#EA4335] to-[#FBBC04] bg-clip-text text-transparent">
-              Inspiring the Next Generation
-            </span>
-          </h2>
-
-          <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-gray-400 leading-relaxed">
-            Real stories from developers, student architects, keynote speakers, and Google Developer
-            Experts who found mentorship and accelerated their careers with GDG Ranchi.
-          </p>
-        </div>
-      </div>
-
-      {/* Slowly scrolling marquee tracks with hover-pause */}
+      {/* Precision tech grid with radial edge mask matching SponsorsSec */}
       <div
-        className="relative mt-8 sm:mt-12 flex flex-col gap-6 sm:gap-8 overflow-hidden pb-10"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-16 sm:w-48 bg-gradient-to-r from-[#060608] to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-16 sm:w-48 bg-gradient-to-l from-[#060608] to-transparent" />
+        className="pointer-events-none absolute inset-0 opacity-[0.05] [mask-image:radial-gradient(ellipse_at_center,black_65%,transparent_95%)]"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 1px, transparent 1px)
+          `,
+          backgroundSize: "40px 40px",
+        }}
+      />
 
-        <div className="flex w-max" ref={marqueeTrack1Ref}>
-          <div className="flex gap-6 sm:gap-8 pr-6 sm:pr-8">
-            {[...testimonials, ...testimonials].map((item, index) => (
-              <TestimonialCard key={`top-${item.id}-${index}`} item={item} />
-            ))}
+      {/* Ambient center blur glow behind title */}
+      <div className="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 h-[260px] w-[560px] rounded-full bg-gradient-to-r from-[#4285F4]/12 via-[#FBBC04]/12 to-[#34A853]/12 blur-[140px]" />
+
+      <div className="relative z-10 mx-auto max-w-7xl text-center">
+        {/* Section Header: Centered & punchy matching 3-column vertical marquee */}
+        <ScrollReveal>
+          <div className="max-w-3xl mx-auto mb-10 sm:mb-14">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-white/80 backdrop-blur-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#FBBC04] shadow-[0_0_8px_#FBBC04]" />
+              ✦ WALL OF LOVE • GDG RANCHI
+            </div>
+
+            <h2 className="mt-5 text-3xl sm:text-5xl md:text-6xl font-black tracking-[-0.04em] text-white leading-tight">
+              Loved by Developers,
+              <br />
+              <span className="bg-gradient-to-r from-[#4285F4] via-[#EA4335] via-[#FBBC04] to-[#34A853] bg-clip-text text-transparent">
+                Inspiring the Next Generation
+              </span>
+            </h2>
+
+            <p className="mt-3.5 text-sm sm:text-base text-gray-400 max-w-lg mx-auto leading-relaxed">
+              Real stories of mentorship, engineering, and career impact.
+            </p>
+          </div>
+        </ScrollReveal>
+
+        {/* 3-Column Moving Vertical Marquee (NamasteDev style: Bottom to Top, Pause on Hover) */}
+        <div className="relative mt-6 sm:mt-8 h-[580px] sm:h-[85vh] overflow-hidden">
+          {/* Top & Bottom Gradient Fades with subtle backdrop blur */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-28 sm:h-36 bg-gradient-to-b from-black via-black/85 to-transparent backdrop-blur-[2px]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-28 sm:h-36 bg-gradient-to-t from-black via-black/85 to-transparent backdrop-blur-[2px]" />
+
+          {/* 3 Vertical Moving Columns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 h-full">
+            {/* COLUMN 1 */}
+            <div className="overflow-hidden">
+              <div
+                className="animate-marquee-up flex flex-col gap-5 sm:gap-6"
+                style={{ "--marquee-duration": "30s" } as React.CSSProperties}
+              >
+                {COLUMN_1_TESTIMONIALS.map((item, idx) => (
+                  <TestimonialCard key={`col1-orig-${item.id}-${idx}`} item={item} />
+                ))}
+                {COLUMN_1_TESTIMONIALS.map((item, idx) => (
+                  <TestimonialCard key={`col1-dup-${item.id}-${idx}`} item={item} />
+                ))}
+              </div>
+            </div>
+
+            {/* COLUMN 2 (Visible on tablet & desktop) */}
+            <div className="hidden md:block overflow-hidden">
+              <div
+                className="animate-marquee-up flex flex-col gap-5 sm:gap-6"
+                style={{ "--marquee-duration": "38s" } as React.CSSProperties}
+              >
+                {COLUMN_2_TESTIMONIALS.map((item, idx) => (
+                  <TestimonialCard key={`col2-orig-${item.id}-${idx}`} item={item} />
+                ))}
+                {COLUMN_2_TESTIMONIALS.map((item, idx) => (
+                  <TestimonialCard key={`col2-dup-${item.id}-${idx}`} item={item} />
+                ))}
+              </div>
+            </div>
+
+            {/* COLUMN 3 (Visible on desktop) */}
+            <div className="hidden lg:block overflow-hidden">
+              <div
+                className="animate-marquee-up flex flex-col gap-5 sm:gap-6"
+                style={{ "--marquee-duration": "34s" } as React.CSSProperties}
+              >
+                {COLUMN_3_TESTIMONIALS.map((item, idx) => (
+                  <TestimonialCard key={`col3-orig-${item.id}-${idx}`} item={item} />
+                ))}
+                {COLUMN_3_TESTIMONIALS.map((item, idx) => (
+                  <TestimonialCard key={`col3-dup-${item.id}-${idx}`} item={item} />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="flex w-max" ref={marqueeTrack2Ref}>
-          <div className="flex gap-6 sm:gap-8 pr-6 sm:pr-8">
-            {[...testimonials.slice().reverse(), ...testimonials.slice().reverse()].map((item, index) => (
-              <TestimonialCard key={`bottom-${item.id}-${index}`} item={item} />
-            ))}
-          </div>
-        </div>
+      
       </div>
     </section>
   );
 };
 
 export default TestimonialsSec;
-

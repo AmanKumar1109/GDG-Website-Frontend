@@ -10,7 +10,11 @@ export const usePublicTeam = () => {
     if (apiMembers && Array.isArray(apiMembers) && apiMembers.length > 0) {
       return apiMembers.map((m: any, idx: number) => ({
         id: m._id || m.id || String(idx),
-        name: `${m.firstName || ""} ${m.lastName || ""}`.trim() || m.fullName || m.name || "Community Member",
+        name:
+          `${m.firstName || ""} ${m.lastName || ""}`.trim() ||
+          m.fullName ||
+          m.name ||
+          "Community Member",
         role: m.primaryRole || m.role || "Core Team",
         company: m.company || m.organization || undefined,
         image:

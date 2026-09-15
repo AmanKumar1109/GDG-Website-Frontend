@@ -171,18 +171,21 @@ const Events = () => {
     };
   }, [filterOpen]);
 
-  const updateFilter = useCallback(<K extends keyof Filters>(key: K, value: Filters[K]) => {
-    setFilters((previous) => ({
-      ...previous,
-      [key]: value,
-    }));
+  const updateFilter = useCallback(
+    <K extends keyof Filters>(key: K, value: Filters[K]) => {
+      setFilters((previous) => ({
+        ...previous,
+        [key]: value,
+      }));
 
-    if (key === "search") setStoreSearch(String(value));
-    if (key === "category") setStoreCategory(String(value));
-    if (key === "status") setStoreStatus(String(value));
+      if (key === "search") setStoreSearch(String(value));
+      if (key === "category") setStoreCategory(String(value));
+      if (key === "status") setStoreStatus(String(value));
 
-    setCurrentPage(1);
-  }, [setStoreSearch, setStoreCategory, setStoreStatus]);
+      setCurrentPage(1);
+    },
+    [setStoreSearch, setStoreCategory, setStoreStatus],
+  );
 
   const toggleTag = useCallback((tag: string) => {
     setFilters((previous) => ({
@@ -272,10 +275,8 @@ const Events = () => {
     [currentPage, totalPages],
   );
 
-  if ((isPending && isLoading) || !minLoadingTimePassed) {
-    return (
-      <GDGLoader />
-    );
+  if (isPending && isLoading) {
+    return <GDGLoader />;
   }
 
   if (isError && !data) {

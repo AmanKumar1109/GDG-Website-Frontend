@@ -32,7 +32,7 @@ export const useCommunitySignupMutation = () => {
     mutationFn: async (payload) => {
       const response = await api.post<CommunitySignupResponse>(
         "/api/v1/auth/community-signup",
-        payload
+        payload,
       );
       return response.data;
     },

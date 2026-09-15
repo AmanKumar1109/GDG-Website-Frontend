@@ -27,29 +27,34 @@ We pride ourselves on using a modern, scalable, and type-safe ecosystem:
 ## 🛠️ Getting Started
 
 ### Prerequisites
+
 - [Node.js](https://nodejs.org/en/) (v18 or higher)
 - npm or yarn
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/gdg-ranchi/frontend.git
    cd frontend
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Configure Environment**
    Create a `.env.local` file in the root and add the necessary variables:
+
    ```env
    VITE_API_URL=https://gdg-website-hi0h.onrender.com/api/v1
    ```
 
 4. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -78,6 +83,7 @@ src/
 ## 🤝 Contributing
 
 We welcome contributions from the community! If you're looking to help improve the GDG Ranchi platform:
+
 1. Check the [Issues](https://github.com/gdg-ranchi/frontend/issues) tab for open tasks.
 2. Fork the repository and create a feature branch.
 3. Ensure your code follows the existing ESLint and Oxlint configurations (`npm run lint`).
@@ -88,5 +94,6 @@ We welcome contributions from the community! If you're looking to help improve t
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
-**Build. Learn. Connect. Grow Together.** 
-*Made with ❤️ by the GDG Ranchi Community.*
+
+**Build. Learn. Connect. Grow Together.**
+_Made with ❤️ by the GDG Ranchi Community._

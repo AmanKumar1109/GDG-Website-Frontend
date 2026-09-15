@@ -46,10 +46,7 @@ export const useCreateMemberMutation = () => {
 
   return useMutation<CreateMemberResponse, Error, CreateMemberPayload>({
     mutationFn: async (payload) => {
-      const response = await api.post<CreateMemberResponse>(
-        "/api/v1/member/create",
-        payload
-      );
+      const response = await api.post<CreateMemberResponse>("/api/v1/member/create", payload);
       return response.data;
     },
     onSuccess: () => {

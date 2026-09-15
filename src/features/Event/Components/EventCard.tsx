@@ -1,11 +1,6 @@
 import { memo } from "react";
 import { Link } from "react-router-dom";
-import {
-  ArrowUpRight,
-  CalendarDays,
-  MapPin,
-  Tag,
-} from "lucide-react";
+import { ArrowUpRight, CalendarDays, MapPin, Tag } from "lucide-react";
 import clsx from "clsx";
 
 import { formatDate } from "../utils/Event.utils";
@@ -95,16 +90,11 @@ const EventCard = memo(({ event }: { event: PublicEvent }) => {
             "rounded-full border px-2.5 py-1.5",
             "text-[9px] font-semibold uppercase tracking-wide",
             "backdrop-blur-md",
-            
+
             config.className,
           )}
         >
-          <span
-            className={clsx(
-              "h-1.5 w-1.5 rounded-full",
-              config.dot,
-            )}
-          />
+          <span className={clsx("h-1.5 w-1.5 rounded-full", config.dot)} />
 
           {config.label}
         </span>
@@ -155,28 +145,18 @@ const EventCard = memo(({ event }: { event: PublicEvent }) => {
 
         {event.venue?.venueName && (
           <div className="my-4 flex min-w-0 items-center gap-2 text-[12px] text-zinc-500">
-            <MapPin
-              size={12}
-              className="shrink-0 text-zinc-600"
-            />
+            <MapPin size={12} className="shrink-0 text-zinc-600" />
 
-            <span className="truncate">
-              {event.venue.venueName}
-            </span>
+            <span className="truncate">{event.venue.venueName}</span>
           </div>
         )}
 
         {/* FOOTER */}
         <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/[0.06] pt-4">
           <div className="flex min-w-0 items-center gap-2 text-[10px] text-zinc-600">
-            <CalendarDays
-              size={12}
-              className="shrink-0 text-blue-500/60"
-            />
+            <CalendarDays size={12} className="shrink-0 text-blue-500/60" />
 
-            <span className="truncate">
-              {formatDate(event.registrationStartAt)}
-            </span>
+            <span className="truncate">{formatDate(event.registrationStartAt)}</span>
           </div>
 
           <span

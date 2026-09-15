@@ -20,7 +20,16 @@ const MotionLink = motion(Link);
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { variant = "primary", size = "md", showArrow = false, className, children, href, to, ...props },
+    {
+      variant = "primary",
+      size = "md",
+      showArrow = false,
+      className,
+      children,
+      href,
+      to,
+      ...props
+    },
     ref,
   ) => {
     const variants: Record<ButtonVariant, string> = {
