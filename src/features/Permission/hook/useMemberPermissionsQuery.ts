@@ -9,7 +9,7 @@ export const useMemberPermissionsQuery = (userId?: string) => {
     queryFn: async () => {
       if (!userId) return [];
       const response = await api.get<MemberPermissionsResponse>(
-        `/api/v1/permission/get/member/permissions?userId=${encodeURIComponent(userId)}`
+        `/api/v1/permission/get/member/permissions?userId=${encodeURIComponent(userId)}`,
       );
       const perms = response.data?.data || [];
       usePermissionStore.getState().setPermissions(perms);

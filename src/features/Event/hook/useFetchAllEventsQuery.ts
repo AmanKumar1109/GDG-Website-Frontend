@@ -26,7 +26,7 @@ export const useFetchAllEventsQuery = (page = 1, limit = 10) => {
     queryKey: ["allEvents", page, limit],
     queryFn: async () => {
       const response = await api.get<FetchAllEventsResponse>(
-        `/api/v1/find/AllEvent?Limit=${limit}&Page=${page}`
+        `/api/v1/find/AllEvent?Limit=${limit}&Page=${page}`,
       );
       return response.data?.data || [];
     },

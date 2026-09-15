@@ -217,8 +217,8 @@ const ImagePage = () => {
 
           {/* Subtitle */}
           <p className="mx-auto mt-6 max-w-2xl text-sm sm:text-base leading-relaxed text-gray-400">
-            Every photo tells a story of innovation, teamwork, and community memories. Explore
-            the moments that made {galleryTitle} an inspiring journey for every builder.
+            Every photo tells a story of innovation, teamwork, and community memories. Explore the
+            moments that made {galleryTitle} an inspiring journey for every builder.
           </p>
         </div>
 

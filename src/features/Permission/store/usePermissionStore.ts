@@ -15,14 +15,16 @@ export const usePermissionStore = create<PermissionStoreState>((set, get) => ({
   setPermissions: (permissions) => set({ permissions }),
 
   hasPermission: (permissionName) => {
-    return (get().permissions || []).some((p) => p.name?.toLowerCase() === permissionName?.toLowerCase());
+    return (get().permissions || []).some(
+      (p) => p.name?.toLowerCase() === permissionName?.toLowerCase(),
+    );
   },
 
   canPerformAction: (action, resource) => {
     return (get().permissions || []).some(
       (p) =>
         p.action?.toLowerCase() === action?.toLowerCase() &&
-        p.resource?.toLowerCase() === resource?.toLowerCase()
+        p.resource?.toLowerCase() === resource?.toLowerCase(),
     );
   },
 

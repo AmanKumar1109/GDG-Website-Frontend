@@ -219,7 +219,10 @@ const MemberTable = ({
                                 onClick={() => setActiveMenuId(null)}
                               />
                               <div className="absolute right-0 top-9 z-30 w-44 rounded-xl border border-[#2b323d] bg-[#1b2027] p-1.5 shadow-xl">
-                                <PermissionChecker permissionName="member:view" permissionAction="read">
+                                <PermissionChecker
+                                  permissionName="member:view"
+                                  permissionAction="read"
+                                >
                                   <button
                                     type="button"
                                     onClick={() => {
@@ -233,7 +236,10 @@ const MemberTable = ({
                                   </button>
                                 </PermissionChecker>
 
-                                <PermissionChecker permissionName="email:send" permissionAction="create">
+                                <PermissionChecker
+                                  permissionName="email:send"
+                                  permissionAction="create"
+                                >
                                   <button
                                     type="button"
                                     onClick={() => {
@@ -248,7 +254,10 @@ const MemberTable = ({
                                 </PermissionChecker>
 
                                 {onChangeRole && (
-                                  <PermissionChecker permissionName="member:update" permissionAction="update">
+                                  <PermissionChecker
+                                    permissionName="member:update"
+                                    permissionAction="update"
+                                  >
                                     <button
                                       type="button"
                                       onClick={() => {
@@ -270,12 +279,17 @@ const MemberTable = ({
                                 )}
 
                                 {onChangeStatus && (
-                                  <PermissionChecker permissionName="member:update" permissionAction="update">
+                                  <PermissionChecker
+                                    permissionName="member:update"
+                                    permissionAction="update"
+                                  >
                                     <button
                                       type="button"
                                       onClick={() => {
                                         const nextStatus: memberStatusType =
-                                          member.membershipStatus === "Active" ? "inactive" : "Active";
+                                          member.membershipStatus === "Active"
+                                            ? "inactive"
+                                            : "Active";
                                         onChangeStatus(member._id, nextStatus);
                                         setActiveMenuId(null);
                                       }}
@@ -288,7 +302,10 @@ const MemberTable = ({
                                 )}
 
                                 {onDeleteMember && (
-                                  <PermissionChecker permissionName="member:delete" permissionAction="delete">
+                                  <PermissionChecker
+                                    permissionName="member:delete"
+                                    permissionAction="delete"
+                                  >
                                     <button
                                       type="button"
                                       onClick={() => {

@@ -139,7 +139,7 @@ export default function Stack({
   useEffect(() => {
     // Avoid re-initializing state if cards length is same (or handle correctly)
     if (cards.length > 0) {
-      // Just to satisfy the linter; normally we would just derive this. 
+      // Just to satisfy the linter; normally we would just derive this.
       // The initializer covers the initial load.
     }
   }, [cards]);

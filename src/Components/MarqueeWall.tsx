@@ -17,8 +17,7 @@ export const MarqueeWall: React.FC<MarqueeWallProps> = ({
   className = "",
   gapClass = "gap-4 sm:gap-6",
 }) => {
-  const animationClass =
-    direction === "right" ? "animate-marquee-right" : "animate-marquee-left";
+  const animationClass = direction === "right" ? "animate-marquee-right" : "animate-marquee-left";
 
   return (
     <div

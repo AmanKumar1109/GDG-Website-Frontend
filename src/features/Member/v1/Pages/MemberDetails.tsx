@@ -18,6 +18,7 @@ import Swal from "sweetalert2";
 import Section from "../../../../Components/Section";
 import { Button } from "../../../../Components/Button";
 import useFetchMemberProfile from "../hook/useFetchMemberProfile";
+import useUpdateMemberMutation from "../hook/useUpdateMemberMutation";
 import useMembers from "../store/useMembers";
 import TagEditor from "../Components/TagEditor";
 
@@ -54,7 +55,9 @@ const MemberDetails = () => {
   const [saveSuccessNotice, setSaveSuccessNotice] = useState(false);
   const [updatedPermissions, setUpdatedPermissions] = useState<Permission[] | null>(null);
 
-  const { mutate, isPending } = useFetchMemberProfile();
+  const targetSlug = id ? String(id) : storeSingleMember?.Slug || "abhishek-gupta";
+  const { isLoading: isPending } = useFetchMemberProfile(targetSlug);
+  const updateMemberMutation = useUpdateMemberMutation();
   useMemberPermissionsQuery(id);
   const assignPermissionsMutation = useAssignPermissionsMutation();
 
@@ -176,14 +179,6 @@ const MemberDetails = () => {
     }
   }, [storeSingleMember, activeMember, setSingleMember]);
 
-  // Trigger network fetch on mount and slug change
-  useEffect(() => {
-    const targetSlug = id ? String(id) : storeSingleMember?.Slug || "abhishek-gupta";
-    if (targetSlug) {
-      mutate({ Slug: targetSlug });
-    }
-  }, [id, storeSingleMember?.Slug, mutate]);
-
   // Handlers for Local Form Editing
   const startEditing = () => {
     if (activeMember) {
@@ -209,41 +204,56 @@ const MemberDetails = () => {
     if (!formData || !activeMember) return;
     setIsSaving(true);
 
-    // Commit local form state cleanly to the Zustand store once
-    updateMember(activeMember._id, formData);
+    updateMemberMutation.mutate(
+      { memberId: activeMember._id, data: formData },
+      {
+        onSuccess: () => {
+          // Commit local form state cleanly to the Zustand store once
+          updateMember(activeMember._id, formData);
 
-    // Persist permissions via API if adjusted
-    if (updatedPermissions && activeMember._id) {
-      assignPermissionsMutation.mutate({
-        memberId: activeMember._id,
-        permission: updatedPermissions.map((p) => ({
-          name: p.name,
-          action: p.action || "read",
-          resource: p.resource || "general",
-          description: p.description,
-          level: (p as any).level || 1,
-        })),
-      });
-    }
+          // Persist permissions via API if adjusted
+          if (updatedPermissions && activeMember._id) {
+            assignPermissionsMutation.mutate({
+              memberId: activeMember._id,
+              permission: updatedPermissions.map((p) => ({
+                name: p.name,
+                action: p.action || "read",
+                resource: p.resource || "general",
+                description: p.description,
+                level: (p as any).level || 1,
+              })),
+            });
+          }
 
-    setTimeout(() => {
-      setIsSaving(false);
-      setIsEdit(false);
-      setIsEditSingleMember(false);
-      setSaveSuccessNotice(true);
-      Swal.fire({
-        title: "Profile Saved!",
-        text: "Member profile information updated successfully.",
-        icon: "success",
-        toast: true,
-        position: "top-end",
-        timer: 2500,
-        showConfirmButton: false,
-        background: "#181b20",
-        color: "#ffffff",
-      });
-      setTimeout(() => setSaveSuccessNotice(false), 2500);
-    }, 300);
+          setIsSaving(false);
+          setIsEdit(false);
+          setIsEditSingleMember(false);
+          setSaveSuccessNotice(true);
+          Swal.fire({
+            title: "Profile Saved!",
+            text: "Member profile information updated successfully.",
+            icon: "success",
+            toast: true,
+            position: "top-end",
+            timer: 2500,
+            showConfirmButton: false,
+            background: "#181b20",
+            color: "#ffffff",
+          });
+          setTimeout(() => setSaveSuccessNotice(false), 2500);
+        },
+        onError: () => {
+          setIsSaving(false);
+          Swal.fire({
+            title: "Error",
+            text: "Failed to update member profile.",
+            icon: "error",
+            background: "#111116",
+            color: "#ffffff",
+          });
+        },
+      },
+    );
   };
 
   const copyEmail = async () => {
@@ -306,9 +316,7 @@ const MemberDetails = () => {
     const current = formData || activeMember;
     if (!current) return;
     const url =
-      current.socialLinks?.portfolio ||
-      current.socialLinks?.website ||
-      current.socialLinks?.github;
+      current.socialLinks?.portfolio || current.socialLinks?.website || current.socialLinks?.github;
     if (url) {
       window.open(url, "_blank", "noopener,noreferrer");
     }
@@ -419,160 +427,146 @@ const MemberDetails = () => {
             </div>
           </header>
 
-        {/* Main Grid */}
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:grid-cols-[minmax(0,1fr)_410px] 2xl:gap-6">
-          {/* Left Column */}
-          <div className="min-w-0 space-y-5">
-            <MemberProfile />
+          {/* Main Grid */}
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:grid-cols-[minmax(0,1fr)_410px] 2xl:gap-6">
+            {/* Left Column */}
+            <div className="min-w-0 space-y-5">
+              <MemberProfile />
 
-            {/* Form inputs with isolated local buffered state for high performance */}
-            <MemberPersonal_Info
-              isEdit={isEdit}
-              data={displayData}
-              onChange={handleFieldChange}
-            />
+              {/* Form inputs with isolated local buffered state for high performance */}
+              <MemberPersonal_Info
+                isEdit={isEdit}
+                data={displayData}
+                onChange={handleFieldChange}
+              />
 
-            <MemberLocation
-              isEdit={isEdit}
-              data={displayData}
-              onChange={handleFieldChange}
-            />
+              <MemberLocation isEdit={isEdit} data={displayData} onChange={handleFieldChange} />
 
-            <MemberSocialLink
-              isEdit={isEdit}
-              data={displayData}
-              onChange={handleFieldChange}
-            />
+              <MemberSocialLink isEdit={isEdit} data={displayData} onChange={handleFieldChange} />
 
-            <Section
-              title="Skills & Interests"
-              description="Technical skills and areas of interest"
-              icon={<Sparkles size={17} />}
-            >
-              <div className="grid gap-6 sm:grid-cols-2">
-                <TagEditor
-                  label="Skills"
-                  values={displayData?.skills ?? []}
-                  variant="green"
-                  editable={isEdit}
-                  onChange={(values: string[]) => handleFieldChange({ skills: values })}
-                />
-                <TagEditor
-                  label="Areas of Interest"
-                  values={displayData?.areaOfInterest ?? []}
-                  variant="purple"
-                  editable={isEdit}
-                  onChange={(values: string[]) =>
-                    handleFieldChange({ areaOfInterest: values })
-                  }
-                />
-              </div>
-            </Section>
-
-            <PermissionChecker permissionName="permission:update" permissionAction="update">
               <Section
-                title="Assign Permissions"
-                description="Role-based access permissions"
-                icon={<ShieldCheck size={17} />}
+                title="Skills & Interests"
+                description="Technical skills and areas of interest"
+                icon={<Sparkles size={17} />}
               >
-                <PermissionManager
-                  isEdit={isEdit}
-                  permissions={AVAILABLE_PERMISSIONS_CONSTANT}
-                  onPermissionsChange={(newPerms) => {
-                    setUpdatedPermissions(newPerms);
-                  }}
-                />
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <TagEditor
+                    label="Skills"
+                    values={displayData?.skills ?? []}
+                    variant="green"
+                    editable={isEdit}
+                    onChange={(values: string[]) => handleFieldChange({ skills: values })}
+                  />
+                  <TagEditor
+                    label="Areas of Interest"
+                    values={displayData?.areaOfInterest ?? []}
+                    variant="purple"
+                    editable={isEdit}
+                    onChange={(values: string[]) => handleFieldChange({ areaOfInterest: values })}
+                  />
+                </div>
               </Section>
-            </PermissionChecker>
 
-            <InternalNote
-              isEdit={isEdit}
-              data={displayData}
-              onChange={handleFieldChange}
-            />
+              <PermissionChecker permissionName="permission:update" permissionAction="update">
+                <Section
+                  title="Assign Permissions"
+                  description="Role-based access permissions"
+                  icon={<ShieldCheck size={17} />}
+                >
+                  <PermissionManager
+                    isEdit={isEdit}
+                    permissions={AVAILABLE_PERMISSIONS_CONSTANT}
+                    onPermissionsChange={(newPerms) => {
+                      setUpdatedPermissions(newPerms);
+                    }}
+                  />
+                </Section>
+              </PermissionChecker>
+
+              <InternalNote isEdit={isEdit} data={displayData} onChange={handleFieldChange} />
+            </div>
+
+            {/* Right Column */}
+            <aside className="min-w-0 space-y-5">
+              <Section
+                title="Quick Actions"
+                description="Common actions for this member"
+                icon={<Zap size={17} />}
+              >
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <PermissionChecker permissionName="email:send" permissionAction="create">
+                    <button
+                      type="button"
+                      onClick={sendEmail}
+                      className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
+                    >
+                      <Send size={16} className="text-white/45 group-hover:text-green-400" />
+                      <div>
+                        <div className="text-[11px] font-medium text-white/75">Send Email</div>
+                        <div className="mt-1 text-[9px] text-white/30">Direct email inquiry</div>
+                      </div>
+                    </button>
+                  </PermissionChecker>
+
+                  <button
+                    type="button"
+                    onClick={copyEmail}
+                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
+                  >
+                    <Copy size={16} className="text-white/45 group-hover:text-blue-400" />
+                    <div>
+                      <div className="text-[11px] font-medium text-white/75">
+                        {copySuccess ? "Copied!" : "Copy Email"}
+                      </div>
+                      <div className="mt-1 text-[9px] text-white/30">Copy address to clipboard</div>
+                    </div>
+                  </button>
+
+                  <PermissionChecker permissionName="member:update" permissionAction="update">
+                    <button
+                      type="button"
+                      onClick={startEditing}
+                      className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
+                    >
+                      <Pencil size={16} className="text-white/45 group-hover:text-blue-400" />
+                      <div>
+                        <div className="text-[11px] font-medium text-white/75">Edit Member</div>
+                        <div className="mt-1 text-[9px] text-white/30">Modify account fields</div>
+                      </div>
+                    </button>
+                  </PermissionChecker>
+
+                  <button
+                    type="button"
+                    onClick={downloadMemberData}
+                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
+                  >
+                    <Download size={16} className="text-white/45 group-hover:text-yellow-400" />
+                    <div>
+                      <div className="text-[11px] font-medium text-white/75">Export Data</div>
+                      <div className="mt-1 text-[9px] text-white/30">Download profile JSON</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={openPortfolio}
+                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027] sm:col-span-2"
+                  >
+                    <Globe2 size={16} className="text-white/45 group-hover:text-purple-400" />
+                    <div>
+                      <div className="text-[11px] font-medium text-white/75">View Portfolio</div>
+                      <div className="mt-1 text-[9px] text-white/30">
+                        Open member's public links
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </Section>
+            </aside>
           </div>
-
-          {/* Right Column */}
-          <aside className="min-w-0 space-y-5">
-            <Section
-              title="Quick Actions"
-              description="Common actions for this member"
-              icon={<Zap size={17} />}
-            >
-              <div className="grid gap-2 sm:grid-cols-2">
-                <PermissionChecker permissionName="email:send" permissionAction="create">
-                  <button
-                    type="button"
-                    onClick={sendEmail}
-                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
-                  >
-                    <Send size={16} className="text-white/45 group-hover:text-green-400" />
-                    <div>
-                      <div className="text-[11px] font-medium text-white/75">Send Email</div>
-                      <div className="mt-1 text-[9px] text-white/30">Direct email inquiry</div>
-                    </div>
-                  </button>
-                </PermissionChecker>
-
-                <button
-                  type="button"
-                  onClick={copyEmail}
-                  className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
-                >
-                  <Copy size={16} className="text-white/45 group-hover:text-blue-400" />
-                  <div>
-                    <div className="text-[11px] font-medium text-white/75">
-                      {copySuccess ? "Copied!" : "Copy Email"}
-                    </div>
-                    <div className="mt-1 text-[9px] text-white/30">Copy address to clipboard</div>
-                  </div>
-                </button>
-
-                <PermissionChecker permissionName="member:update" permissionAction="update">
-                  <button
-                    type="button"
-                    onClick={startEditing}
-                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
-                  >
-                    <Pencil size={16} className="text-white/45 group-hover:text-blue-400" />
-                    <div>
-                      <div className="text-[11px] font-medium text-white/75">Edit Member</div>
-                      <div className="mt-1 text-[9px] text-white/30">Modify account fields</div>
-                    </div>
-                  </button>
-                </PermissionChecker>
-
-                <button
-                  type="button"
-                  onClick={downloadMemberData}
-                  className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027]"
-                >
-                  <Download size={16} className="text-white/45 group-hover:text-yellow-400" />
-                  <div>
-                    <div className="text-[11px] font-medium text-white/75">Export Data</div>
-                    <div className="mt-1 text-[9px] text-white/30">Download profile JSON</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={openPortfolio}
-                  className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#232830] bg-[#121519] p-3 text-left transition hover:border-[#343b46] hover:bg-[#1b2027] sm:col-span-2"
-                >
-                  <Globe2 size={16} className="text-white/45 group-hover:text-purple-400" />
-                  <div>
-                    <div className="text-[11px] font-medium text-white/75">View Portfolio</div>
-                    <div className="mt-1 text-[9px] text-white/30">
-                      Open member's public links
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </Section>
-          </aside>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
     </PermissionChecker>
   );
 };

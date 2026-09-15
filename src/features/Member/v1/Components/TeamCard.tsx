@@ -50,14 +50,7 @@ const getRoleAccent = (role: string) => {
   };
 };
 
-const TeamCard = ({
-  imageUrl,
-  FullName,
-  Role,
-  company,
-  SocialLink,
-  onClick,
-}: TeamCardProps) => {
+const TeamCard = ({ imageUrl, FullName, Role, company, SocialLink, onClick }: TeamCardProps) => {
   const [imageError, setImageError] = useState(false);
   const accent = getRoleAccent(Role);
 
@@ -132,9 +125,7 @@ const TeamCard = ({
           </span>
 
           {company && (
-            <p className="mt-2 line-clamp-1 max-w-[240px] text-xs text-gray-400">
-              {company}
-            </p>
+            <p className="mt-2 line-clamp-1 max-w-[240px] text-xs text-gray-400">{company}</p>
           )}
         </div>
 

@@ -1,9 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../../utils/axios.utils";
-import type {
-  AssignPermissionPayload,
-  AssignPermissionResponse,
-} from "../types/Permission.type";
+import type { AssignPermissionPayload, AssignPermissionResponse } from "../types/Permission.type";
 
 export const useAssignPermissionsMutation = () => {
   const queryClient = useQueryClient();
@@ -12,7 +9,7 @@ export const useAssignPermissionsMutation = () => {
     mutationFn: async (payload) => {
       const response = await api.post<AssignPermissionResponse>(
         "/api/v1/permission/add/member/permissions",
-        payload
+        payload,
       );
       return response.data;
     },

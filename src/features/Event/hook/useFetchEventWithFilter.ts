@@ -76,15 +76,11 @@ function getFallbackFilteredEvents(filters: EventFilters) {
   }
 
   if (filters.category && filters.category !== "all") {
-    filtered = filtered.filter(
-      (e) => e.category.toLowerCase() === filters.category!.toLowerCase(),
-    );
+    filtered = filtered.filter((e) => e.category.toLowerCase() === filters.category!.toLowerCase());
   }
 
   if (filters.status && filters.status !== "all") {
-    filtered = filtered.filter(
-      (e) => e.status.toLowerCase() === filters.status!.toLowerCase(),
-    );
+    filtered = filtered.filter((e) => e.status.toLowerCase() === filters.status!.toLowerCase());
   }
 
   if (filters.tags) {

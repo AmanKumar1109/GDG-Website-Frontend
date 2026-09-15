@@ -83,7 +83,7 @@ const CreateEvent = () => {
         showAlert(
           "error",
           "Publish Failed",
-          error?.response?.data?.message || "Something went wrong while publishing the event."
+          error?.response?.data?.message || "Something went wrong while publishing the event.",
         );
       },
     });
@@ -143,7 +143,9 @@ const CreateEvent = () => {
             >
               <ExternalLink size={13} />
 
-              <span>{createEventMutation.isPending || saving ? "Publishing..." : "Publish Event"}</span>
+              <span>
+                {createEventMutation.isPending || saving ? "Publishing..." : "Publish Event"}
+              </span>
             </button>
           </div>
         </div>

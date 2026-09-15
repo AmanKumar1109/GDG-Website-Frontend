@@ -48,11 +48,7 @@ const getRoleCategoryBadge = (role: string) => {
   };
 };
 
-export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({
-  member,
-  isOpen,
-  onClose,
-}) => {
+export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ member, isOpen, onClose }) => {
   const [failedImageId, setFailedImageId] = useState<string | number | null>(null);
 
   useEffect(() => {
@@ -125,13 +121,9 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({
               {trackBadge.label}
             </span>
 
-            <h2 className="mt-2 text-2xl font-bold text-white tracking-tight">
-              {member.name}
-            </h2>
+            <h2 className="mt-2 text-2xl font-bold text-white tracking-tight">{member.name}</h2>
 
-            <p className="text-sm font-semibold text-[#8AB4F8]">
-              {member.role}
-            </p>
+            <p className="text-sm font-semibold text-[#8AB4F8]">{member.role}</p>
 
             {member.company && (
               <p className="mt-1 flex items-center justify-center sm:justify-start gap-1.5 text-xs text-gray-400">
@@ -190,11 +182,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({
         {/* Footer Note */}
         <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-xs text-gray-500">
           <span>GDG Ranchi Community Member</span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-[#8AB4F8] hover:underline"
-          >
+          <button type="button" onClick={onClose} className="text-[#8AB4F8] hover:underline">
             Done
           </button>
         </div>
