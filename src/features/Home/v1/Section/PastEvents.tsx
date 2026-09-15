@@ -24,7 +24,7 @@ const PastEvents = () => {
     );
   }
 
-  const events = Array.isArray(data) ? data : data.data || [];
+  const events = data || [];
 
   return (
     <section className="relative overflow-x-clip bg-[#050505] px-5 py-20 sm:px-8 sm:py-24 md:px-12 lg:px-[8%] lg:py-[12vh] xl:px-[10%]">

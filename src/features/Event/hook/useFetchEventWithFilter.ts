@@ -1,9 +1,7 @@
+
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../utils/axios.utils";
-import type { PublicEvent } from "../type/Event.type";
-import { singleEventData } from "../data/singleEventData";
-import { fallbackUpcomingEvents } from "./useFetchUpcomingEvent";
-import { fallbackPastEvents } from "./useFetchPastEvent";
+
 
 export interface EventFilters {
   page: number;
@@ -110,33 +108,26 @@ const useFetchEventWithFilter = (filters: EventFilters) => {
   return useQuery({
     queryKey: ["events", filters],
     queryFn: async () => {
-      try {
-        const res = await api.get("/api/v1/events", {
-          params: {
-            page: filters.page,
-            limit: filters.limit,
-            search: filters.search,
-            category: filters.category,
-            tags: filters.tags,
-            status: filters.status,
-          },
-        });
-
-        if (res.data?.data?.events) {
-          return res.data.data;
-        }
-      } catch {
-        console.warn("[GDG Ranchi] Live events filter API offline, using fallback data.");
+      const res = await api.get("/api/v1/events", {
+        params: {
+          page: filters.page,
+          limit: filters.limit,
+          search: filters.search,
+          category: filters.category,
+          tags: filters.tags,
+          status: filters.status,
+        },
+      });
+      if (res.data?.data?.events) {
+        return res.data.data;
       }
-
-      return getFallbackFilteredEvents(filters);
+      return { events: [], pagination: { total: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false } };
     },
-
     refetchOnReconnect: true,
     refetchOnWindowFocus: false,
     staleTime: 30_000,
-    // Keep previous data while loading new page (prevents UI flash)
     placeholderData: (previousData) => previousData,
+    retry: 1
   });
 };
 

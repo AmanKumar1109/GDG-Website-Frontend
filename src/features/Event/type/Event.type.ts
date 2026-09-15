@@ -88,9 +88,9 @@ export interface EventFormData {
 
   venue: EventVenue;
 
-  mentors?: string[];
+  mentors?: any[];
 
-  judges?: string[];
+  judges?: any[];
 
   partners?: string[];
 
@@ -134,9 +134,9 @@ export interface UpdateEventData {
 
   venue?: Partial<EventVenue>;
 
-  mentors?: string[];
+  mentors?: any[];
 
-  judges?: string[];
+  judges?: any[];
 
   partners?: string[];
 
@@ -181,9 +181,9 @@ export interface EventResponse {
 
   venue: EventVenue;
 
-  mentors?: string[];
+  mentors?: any[];
 
-  judges?: string[];
+  judges?: any[];
 
   partners?: string[];
 

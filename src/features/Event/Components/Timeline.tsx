@@ -1,241 +1,93 @@
-import { useRef, useState } from "react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { CalendarDays, Check, ChevronDown, Clock3, CircleDot, Flag, Play } from "lucide-react";
-
+import { useState } from "react";
 import { formatDate, formatTime } from "../utils/Event.utils";
 import type { EventTimelineItem } from "../type/Event.type";
+import { motion } from "framer-motion";
 
-interface TimelineProps {
-  timeline: EventTimelineItem[];
-}
+const Timeline = ({ timeline }: { timeline: EventTimelineItem[] }) => {
+  const [now] = useState(() => Date.now());
+  if (!timeline || timeline.length === 0) return null;
 
-const Timeline = ({ timeline = [] }: TimelineProps) => {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const headingRef = useRef<HTMLDivElement | null>(null);
-
-  const itemRefs = useRef<HTMLDivElement[]>([]);
-  const nodeRefs = useRef<HTMLDivElement[]>([]);
-
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
-
-  /* ================================================================
-     GSAP ANIMATIONS
-  ================================================================ */
-  useGSAP(
-    () => {
-      if (!timeline.length) return;
-
-      const items = itemRefs.current.filter(Boolean);
-      const nodes = nodeRefs.current.filter(Boolean);
-
-      const intro = gsap.timeline({
-        defaults: { ease: "power3.out" },
-      });
-
-      intro
-        .from(headingRef.current, {
-          opacity: 0,
-          y: 25,
-          duration: 0.7,
-        })
-        .from(
-          items,
-          {
-            opacity: 0,
-            y: 30,
-            duration: 0.5,
-            stagger: 0.08,
-          },
-          "-=0.35",
-        )
-        .from(
-          nodes,
-          {
-            scale: 0,
-            opacity: 0,
-            duration: 0.4,
-            stagger: 0.07,
-            ease: "back.out(1.7)",
-          },
-          "-=0.45",
-        );
-
-      if (nodes[0]) {
-        gsap.to(nodes[0], {
-          scale: 1.08,
-          duration: 1.5,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-        });
-      }
-
-      return () => {
-        intro.kill();
-      };
-    },
-    {
-      scope: sectionRef,
-      dependencies: [timeline.length],
-    },
+  // Sort timeline by start date
+  const sortedTimeline = [...timeline].sort(
+    (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
   );
 
-  if (!timeline.length) return null;
-
-  const toggleItem = (index: number) => {
-    setOpenIndex((current) => (current === index ? null : index));
-  };
-
   return (
-    <section
-      ref={sectionRef}
-      className="relative w-full overflow-hidden  py-16 sm:py-20 md:py-24 lg:py-28"
-    >
-      {/* ================================================================
-          BACKGROUND GLOWS
-      ================================================================ */}
-      <div className="pointer-events-none absolute left-[5%] top-[20%] h-56 w-56 rounded-full bg-[#4285F4]/[0.025] blur-[100px] sm:left-[15%] sm:h-72 sm:w-72 sm:blur-[120px]" />
-      <div className="pointer-events-none absolute right-[0%] top-[50%] h-64 w-64 rounded-full bg-[#A855F7]/[0.025] blur-[110px] sm:right-[10%] sm:h-80 sm:w-80 sm:blur-[130px]" />
-      <div className="pointer-events-none absolute bottom-[5%] left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-[#34A853]/[0.018] blur-[110px]" />
+    <div className="relative py-4 sm:py-8">
+      {/* Vertical Line - dynamically positioned for mobile/tablet/desktop */}
+      <div className="absolute left-[19px] sm:left-[27px] md:left-[180px] top-4 sm:top-8 bottom-4 sm:bottom-8 w-px bg-white/10" />
 
-      {/* ================================================================
-          CONTAINER
-      ================================================================ */}
-      <div className="relative  w-full px-4 sm:px-6 md:px-8 lg:px-10">
-        {/* ================================================================
-            HEADER
-        ================================================================ */}
-        <div ref={headingRef} className="mx-auto mb-12 max-w-2xl text-center sm:mb-16 md:mb-20">
-          <div className="mb-4 flex items-center justify-center gap-2.5 sm:gap-3">
-            <span className="h-px w-6 bg-[#A855F7]/40 sm:w-8" />
-            <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-[#A855F7] sm:text-xs">
-              Event Schedule
-            </span>
-            <span className="h-px w-6 bg-[#A855F7]/40 sm:w-8" />
-          </div>
+      <div className="flex flex-col gap-8 sm:gap-10 md:gap-12">
+        {sortedTimeline.map((item, index) => {
+          const startMs = new Date(item.startAt).getTime();
+          const endMs = item.endAt ? new Date(item.endAt).getTime() : startMs;
+          
+          const isPast = endMs < now;
+          const isLive = startMs <= now && endMs >= now;
 
-          <h2 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
-            Agenda{" "}
-            <span className="bg-gradient-to-r from-[#4285F4] via-[#A855F7] to-[#34A853] bg-clip-text text-transparent">
-              & Timeline
-            </span>
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-lg text-xs leading-relaxed text-white/40 sm:text-sm md:text-base">
-            Follow everything happening throughout the event, from registration to the closing
-            ceremony.
-          </p>
-        </div>
-
-        {/* ================================================================
-            TIMELINE STRUCTURE
-        ================================================================ */}
-        <div className="relative w-full">
-          {/* Vertical Spine Line */}
-          <div
-            className="
-              absolute
-              bottom-6
-              left-[19px]
-              top-6
-              w-px
-              bg-gradient-to-b
-              from-[#34A853]/50
-              via-[#4285F4]/30
-              via-[#A855F7]/35
-              to-[#FBBC04]/45
-              sm:left-[131px]
-              md:left-[161px]
-              lg:left-[181px]
-            "
-          />
-
-          <div className="space-y-6 sm:space-y-8">
-            {timeline.map((item, index) => {
-              const isFirst = index === 0;
-              const isLast = index === timeline.length - 1;
-              const isOpen = openIndex === index;
-
-              return (
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              key={item._id || index}
+              className="relative flex flex-col md:flex-row items-start group"
+            >
+              {/* Dot Marker (Absolute for perfectly aligning with the line across breakpoints) */}
+              <div
+                className={`absolute left-[7px] sm:left-[15px] md:left-[168px] top-[4px] md:top-[6px] flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[3px] bg-[#0a0a0a] transition-colors duration-500
+                  ${
+                    isLive
+                      ? "border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+                      : isPast
+                      ? "border-white/20"
+                      : "border-blue-500/50 group-hover:border-blue-400"
+                  }
+                `}
+              >
                 <div
-                  key={item.title}
-                  ref={(element) => {
-                    if (element) itemRefs.current[index] = element;
-                  }}
-                  className="
-                    relative
-                    grid
-                    grid-cols-[40px_1fr]
-                    gap-3
-                    sm:grid-cols-[110px_42px_1fr]
-                    sm:gap-4
-                    md:grid-cols-[140px_42px_1fr]
-                    lg:grid-cols-[160px_42px_1fr]
-                  "
-                >
-                  {/* ======================================================
-                      COLUMN 1: DESKTOP DATE & TIME
-                  ====================================================== */}
-                  <div className="hidden text-right sm:block pt-2">
-                    <div className="text-xs font-semibold text-white/70">
-                      {formatDate(item.startAt)}
-                    </div>
-                    <div className="mt-1 flex items-center justify-end gap-1 text-[11px] text-white/40">
-                      <Clock3 size={12} />
-                      <span>{formatTime(item.startAt)}</span>
-                    </div>
-                  </div>
+                  className={`h-2 w-2 rounded-full ${
+                    isLive ? "bg-emerald-400 animate-pulse" : isPast ? "bg-transparent" : "bg-transparent group-hover:bg-blue-400"
+                  }`}
+                />
+              </div>
 
-                  {/* ======================================================
-                      COLUMN 2: NODE ICON
-                  ====================================================== */}
-                  <div className="relative flex justify-center pt-1">
-                    <div
-                      ref={(element) => {
-                        if (element) nodeRefs.current[index] = element;
-                      }}
-                      className={`
-                        relative
-                        z-20
-                        flex
-                        h-10
-                        w-10
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-full
-                        border
-                        bg-[#050505]
-                        ${
-                          isFirst
-                            ? "border-[#34A853]/60 shadow-[0_0_20px_rgba(52,168,83,0.25)]"
-                            : isLast
-                              ? "border-[#FBBC04]/50"
-                              : "border-[#A855F7]/30"
-                        }
-                      `}
+              {/* Time Section */}
+              <div className="md:w-[180px] flex-shrink-0 md:text-right pb-2 md:pb-0 pl-10 sm:pl-16 md:pl-0 pr-0 md:pr-10 pt-0.5">
+                  <span className={`text-sm sm:text-base font-bold block ${isLive ? 'text-emerald-400' : 'text-white/90'}`}>
+                    {formatDate(item.startAt)}
+                  </span>
+                  <span className={`text-xs sm:text-sm mt-0.5 sm:mt-1 font-semibold block ${isLive ? 'text-emerald-400/80' : 'text-white/40'}`}>
+                    {formatTime(item.startAt)}
+                    {item.endAt && item.endAt !== item.startAt && ` - ${formatTime(item.endAt)}`}
+                  </span>
+              </div>
+
+              {/* Content Section */}
+              <div className="flex-1 pl-10 sm:pl-16 md:pl-10 w-full">
+                <div
+                  className={`rounded-2xl border p-4 sm:p-5 transition-all duration-300
+                    ${
+                      isLive
+                        ? "border-emerald-500/30 bg-emerald-500/5 shadow-xl shadow-emerald-500/5"
+                        : "border-white/10 bg-white/[0.02] hover:bg-white/[0.04]"
+                    }
+                  `}
+                >
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                    <h3
+                      className={`text-base sm:text-lg lg:text-xl font-bold ${
+                        isLive ? "text-emerald-400" : "text-white"
+                      }`}
                     >
-                      <span
-                        className={`
-                          flex
-                          h-6
-                          w-6
-                          items-center
-                          justify-center
-                          rounded-full
-                          ${isFirst ? "bg-[#34A853]" : isLast ? "bg-[#FBBC04]" : "bg-[#A855F7]/15"}
-                        `}
-                      >
-                        {isFirst ? (
-                          <Play size={10} fill="currentColor" className="ml-0.5 text-black" />
-                        ) : isLast ? (
-                          <Flag size={11} strokeWidth={2.2} className="text-black" />
-                        ) : (
-                          <CircleDot size={11} strokeWidth={2} className="text-[#A855F7]" />
-                        )}
+                      {item.title}
+                    </h3>
+                    {isLive && (
+                      <span className="rounded-full bg-emerald-500/20 px-2 sm:px-2.5 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/30 shrink-0">
+                        Live
                       </span>
-                    </div>
+                    )}
                   </div>
 
                   {/* ======================================================
@@ -382,26 +234,12 @@ const Timeline = ({ timeline = [] }: TimelineProps) => {
                     </div>
                   </button>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* ================================================================
-            FOOTER
-        ================================================================ */}
-        <div className="mt-12 flex items-center justify-center gap-3 sm:mt-16">
-          <span className="h-px w-8 bg-white/10 sm:w-12" />
-          <div className="flex items-center gap-2">
-            <CalendarDays size={12} className="text-white/30" />
-            <span className="text-[9px] font-medium uppercase tracking-[0.2em] text-white/30 sm:text-[10px]">
-              Complete Event Schedule
-            </span>
-          </div>
-          <span className="h-px w-8 bg-white/10 sm:w-12" />
-        </div>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
-    </section>
+    </div>
   );
 };
 
