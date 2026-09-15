@@ -8,6 +8,9 @@ import { useEffect, useState } from "react";
 
 const UpcomingEvent = () => {
   const { data, isPending, isError, isLoading, error } = useFetchUpcomingEvent();
+
+  console.log("Data", data);
+
   const [visibleCount, setVisibleCount] = useState(3);
 
   // Lazy load more events when the last visible event comes into view

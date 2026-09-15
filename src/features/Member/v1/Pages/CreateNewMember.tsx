@@ -122,7 +122,10 @@ const CreateNewMember = () => {
 
   const removeSkill = (skill: string) => {
     const currentSkills = control._formValues.skills || [];
-    setValue("skills", currentSkills.filter((item: string) => item !== skill));
+    setValue(
+      "skills",
+      currentSkills.filter((item: string) => item !== skill),
+    );
   };
 
   // ==========================================================
@@ -131,9 +134,12 @@ const CreateNewMember = () => {
   const toggleInterest = (interest: string) => {
     const currentInterests = control._formValues.areaOfInterest || [];
     const exists = currentInterests.includes(interest);
-    
+
     if (exists) {
-      setValue("areaOfInterest", currentInterests.filter((item: string) => item !== interest));
+      setValue(
+        "areaOfInterest",
+        currentInterests.filter((item: string) => item !== interest),
+      );
     } else {
       setValue("areaOfInterest", [...currentInterests, interest]);
     }
@@ -143,7 +149,12 @@ const CreateNewMember = () => {
   // SUBMIT
   // ==========================================================
   const onSubmitForm = (data: CreateMemberData) => {
-    if (!data.firstName?.trim() || !data.lastName?.trim() || !data.email?.trim() || !data.primaryRole) {
+    if (
+      !data.firstName?.trim() ||
+      !data.lastName?.trim() ||
+      !data.email?.trim() ||
+      !data.primaryRole
+    ) {
       alert("First name, last name, email, and primary role are required.");
       return;
     }
@@ -179,7 +190,9 @@ const CreateNewMember = () => {
       onSuccess: (res) => {
         Swal.fire({
           title: "Member Created!",
-          text: res.message || `${payload.firstName} ${payload.lastName} has been onboarded successfully.`,
+          text:
+            res.message ||
+            `${payload.firstName} ${payload.lastName} has been onboarded successfully.`,
           icon: "success",
           background: "#111116",
           color: "#ffffff",
@@ -435,10 +448,12 @@ const CreateNewMember = () => {
                           />
                         )}
                       />
-                      
+
                       <div className="flex items-center gap-4">
                         <div className="h-[1px] flex-1 bg-white/10" />
-                        <span className="text-xs font-medium text-white/40 uppercase tracking-widest">or</span>
+                        <span className="text-xs font-medium text-white/40 uppercase tracking-widest">
+                          or
+                        </span>
                         <div className="h-[1px] flex-1 bg-white/10" />
                       </div>
 
@@ -1029,7 +1044,9 @@ const CreateNewMember = () => {
                     "
                     >
                       <Save size={14} />
-                      {createMemberMutation.isPending || isSubmitting ? "Creating..." : "Create Member"}
+                      {createMemberMutation.isPending || isSubmitting
+                        ? "Creating..."
+                        : "Create Member"}
                     </Button>
 
                     <Button

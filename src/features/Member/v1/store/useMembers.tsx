@@ -218,10 +218,9 @@ export const useMembers = create<UseMembersType>((set) => ({
               lastName: (updates as any).lastName ?? m.lastName,
               email: (updates as any).email ?? m.email,
               primaryRole: (updates as any).primaryRole ?? m.primaryRole,
-              membershipStatus:
-                (updates as any).membershipStatus ?? m.membershipStatus,
+              membershipStatus: (updates as any).membershipStatus ?? m.membershipStatus,
             } as fetchMembersType)
-          : m
+          : m,
       );
 
       return {

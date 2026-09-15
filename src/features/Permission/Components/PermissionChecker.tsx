@@ -18,7 +18,9 @@ const PermissionChecker = ({
 
   const hasPermission = (perms || []).some((permission) => {
     const matchesName = permission.name?.toLowerCase() === permissionName?.toLowerCase();
-    const matchesAction = permissionAction ? permission.action?.toLowerCase() === permissionAction?.toLowerCase() : true;
+    const matchesAction = permissionAction
+      ? permission.action?.toLowerCase() === permissionAction?.toLowerCase()
+      : true;
     return matchesName && matchesAction;
   });
 

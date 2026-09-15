@@ -88,6 +88,6 @@ export const useCreateMemberDraft = create<CreateMemberDraftState>()(
     }),
     {
       name: "create-member-draft",
-    }
-  )
+    },
+  ),
 );

@@ -22,7 +22,7 @@ export const useFetchAllMembersQuery = (page = 1, limit = 20) => {
     queryKey: ["allMembers", page, limit],
     queryFn: async () => {
       const response = await api.get<FetchAllMembersResponse>(
-        `/api/v1/member/get/allMembers?limit=${limit}&page=${page}`
+        `/api/v1/member/get/allMembers?limit=${limit}&page=${page}`,
       );
       return response.data?.data || [];
     },

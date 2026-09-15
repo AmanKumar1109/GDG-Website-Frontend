@@ -1,451 +1,401 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
-  ExternalLink,
-  Handshake,
-  Mail,
-  ArrowUpRight,
-  GraduationCap,
-  Building2,
+  ArrowRight,
   Sparkles,
+  Building2,
   BookOpen,
   Users,
+  GraduationCap,
   Code2,
 } from "lucide-react";
-import { FaGoogle, FaGithub, FaDiscord } from "react-icons/fa";
+import { FaGoogle, FaGithub, FaDiscord, FaAws } from "react-icons/fa";
 import {
   SiGooglecloud,
   SiAndroid,
   SiFlutter,
   SiFirebase,
-  SiTensorflow,
   SiPostman,
-  SiFigma,
   SiJetbrains,
   SiDocker,
   SiVercel,
   SiStripe,
   SiSupabase,
+  SiMongodb,
+  SiCloudflare,
+  SiTensorflow,
+  SiRedis,
+  SiTailwindcss,
 } from "react-icons/si";
-import Swal from "sweetalert2";
-import MarqueeWall from "../../../../Components/MarqueeWall";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-export interface SponsorCard {
+gsap.registerPlugin(ScrollTrigger);
+
+export interface SponsorItem {
   name: string;
-  role: string;
+  category: string;
   url: string;
   icon: React.ReactNode;
-  brandColor?: string;
 }
 
-// 1. Education & Academic Partners (Moving Left to Right)
-const EDUCATION_PARTNERS: SponsorCard[] = [
-  {
-    name: "BIT Mesra",
-    role: "Premier Engineering Institute",
-    url: "https://www.bitmesra.ac.in",
-    icon: <Building2 className="text-2xl text-[#8AB4F8]" />,
-    brandColor: "#8AB4F8",
-  },
-  {
-    name: "JTU Jharkhand",
-    role: "State Technical University",
-    url: "https://www.jtu.ac.in",
-    icon: <GraduationCap className="text-2xl text-[#34A853]" />,
-    brandColor: "#34A853",
-  },
-  {
-    name: "IIT (ISM) Dhanbad",
-    role: "National Institute of Eminence",
-    url: "https://www.iitism.ac.in",
-    icon: <BookOpen className="text-2xl text-[#FBBC04]" />,
-    brandColor: "#FBBC04",
-  },
-  {
-    name: "NIFFT Ranchi",
-    role: "Manufacturing & Tech Institute",
-    url: "http://www.nifft.ac.in",
-    icon: <Building2 className="text-2xl text-[#EA4335]" />,
-    brandColor: "#EA4335",
-  },
-  {
-    name: "Ranchi University",
-    role: "Academic Outreach Partner",
-    url: "https://www.ranchiuniversity.ac.in",
-    icon: <GraduationCap className="text-2xl text-[#8AB4F8]" />,
-    brandColor: "#8AB4F8",
-  },
-  {
-    name: "Marwari College",
-    role: "Undergraduate STEM Hub",
-    url: "https://www.marwaricollegeranchi.ac.in",
-    icon: <BookOpen className="text-2xl text-[#34A853]" />,
-    brandColor: "#34A853",
-  },
-];
-
-// 2. Tech & Tools (Moving across)
-const TECH_TOOLS_PARTNERS: SponsorCard[] = [
+// 6 Flagship Gold Sponsors
+const GOLD_SPONSORS: SponsorItem[] = [
   {
     name: "Google for Developers",
-    role: "Global Developer Platform",
+    category: "Title & Flagship Partner",
     url: "https://developers.google.com",
     icon: <FaGoogle className="text-2xl text-[#4285F4]" />,
-    brandColor: "#4285F4",
   },
   {
     name: "Google Cloud",
-    role: "Vertex AI & Cloud Infra",
+    category: "Cloud & Vertex AI Partner",
     url: "https://cloud.google.com",
     icon: <SiGooglecloud className="text-2xl text-[#34A853]" />,
-    brandColor: "#34A853",
-  },
-  {
-    name: "Android",
-    role: "Mobile Ecosystem & Compose",
-    url: "https://developer.android.com",
-    icon: <SiAndroid className="text-2xl text-[#3DDC84]" />,
-    brandColor: "#3DDC84",
-  },
-  {
-    name: "Flutter",
-    role: "Multi-Platform Framework",
-    url: "https://flutter.dev",
-    icon: <SiFlutter className="text-2xl text-[#54C5F8]" />,
-    brandColor: "#54C5F8",
-  },
-  {
-    name: "Firebase",
-    role: "Realtime DB & App Engine",
-    url: "https://firebase.google.com",
-    icon: <SiFirebase className="text-2xl text-[#FFCA28]" />,
-    brandColor: "#FFCA28",
-  },
-  {
-    name: "TensorFlow",
-    role: "Open Source ML Platform",
-    url: "https://www.tensorflow.org",
-    icon: <SiTensorflow className="text-2xl text-[#FF6F00]" />,
-    brandColor: "#FF6F00",
   },
   {
     name: "GitHub",
-    role: "CI/CD & Open Source Code",
+    category: "Developer Platform Partner",
     url: "https://github.com",
     icon: <FaGithub className="text-2xl text-white" />,
-    brandColor: "#FFFFFF",
   },
   {
     name: "JetBrains",
-    role: "Professional Developer IDEs",
+    category: "Engineering IDE Partner",
     url: "https://www.jetbrains.com",
     icon: <SiJetbrains className="text-2xl text-[#FBBC04]" />,
-    brandColor: "#FBBC04",
   },
   {
-    name: "Figma",
-    role: "Design Systems & Prototyping",
-    url: "https://www.figma.com",
-    icon: <SiFigma className="text-2xl text-[#F24E1E]" />,
-    brandColor: "#F24E1E",
+    name: "MongoDB",
+    category: "Modern Database Partner",
+    url: "https://www.mongodb.com",
+    icon: <SiMongodb className="text-2xl text-[#47A248]" />,
   },
   {
-    name: "Docker",
-    role: "Containerized Workflows",
-    url: "https://www.docker.com",
-    icon: <SiDocker className="text-2xl text-[#2496ED]" />,
-    brandColor: "#2496ED",
-  },
-  {
-    name: "Postman",
-    role: "API Lifecycle Platform",
-    url: "https://www.postman.com",
-    icon: <SiPostman className="text-2xl text-[#FF6C37]" />,
-    brandColor: "#FF6C37",
-  },
-  {
-    name: "Vercel",
-    role: "Frontend Cloud & Edge",
-    url: "https://vercel.com",
-    icon: <SiVercel className="text-2xl text-white" />,
-    brandColor: "#FFFFFF",
-  },
-  {
-    name: "Supabase",
-    role: "Open Source Postgres Engine",
-    url: "https://supabase.com",
-    icon: <SiSupabase className="text-2xl text-[#3ECF8E]" />,
-    brandColor: "#3ECF8E",
-  },
-  {
-    name: "Stripe",
-    role: "Financial Infrastructure",
-    url: "https://stripe.com",
-    icon: <SiStripe className="text-2xl text-[#635BFF]" />,
-    brandColor: "#635BFF",
+    name: "AWS Cloud",
+    category: "Infrastructure Partner",
+    url: "https://aws.amazon.com",
+    icon: <FaAws className="text-2xl text-[#FF9900]" />,
   },
 ];
 
-// 3. Community & Ecosystem Partners (Moving)
-const COMMUNITY_PARTNERS: SponsorCard[] = [
+// 12 Premier Tech & Tooling Silver Sponsors
+const SILVER_SPONSORS: SponsorItem[] = [
   {
-    name: "Women Techmakers",
-    role: "Diversity & Inclusion Partner",
-    url: "https://developers.google.com/womentechmakers",
-    icon: <Users className="text-2xl text-[#EA4335]" />,
-    brandColor: "#EA4335",
+    name: "Android",
+    category: "Mobile Ecosystem",
+    url: "https://developer.android.com",
+    icon: <SiAndroid className="text-xl text-[#3DDC84]" />,
   },
   {
-    name: "Google Developer Groups",
-    role: "Global Developer Chapters",
-    url: "https://gdg.community.dev",
-    icon: <FaGoogle className="text-2xl text-[#4285F4]" />,
-    brandColor: "#4285F4",
+    name: "Flutter",
+    category: "Multi-Platform UI",
+    url: "https://flutter.dev",
+    icon: <SiFlutter className="text-xl text-[#54C5F8]" />,
+  },
+  {
+    name: "Firebase",
+    category: "Realtime Backend",
+    url: "https://firebase.google.com",
+    icon: <SiFirebase className="text-xl text-[#FFCA28]" />,
+  },
+  {
+    name: "Postman",
+    category: "API Lifecycle",
+    url: "https://www.postman.com",
+    icon: <SiPostman className="text-xl text-[#FF6C37]" />,
+  },
+  {
+    name: "Docker",
+    category: "Container Engine",
+    url: "https://www.docker.com",
+    icon: <SiDocker className="text-xl text-[#2496ED]" />,
+  },
+  {
+    name: "Vercel",
+    category: "Frontend Cloud",
+    url: "https://vercel.com",
+    icon: <SiVercel className="text-xl text-white" />,
+  },
+  {
+    name: "Supabase",
+    category: "Open Postgres",
+    url: "https://supabase.com",
+    icon: <SiSupabase className="text-xl text-[#3ECF8E]" />,
+  },
+  {
+    name: "Stripe",
+    category: "Payments Infra",
+    url: "https://stripe.com",
+    icon: <SiStripe className="text-xl text-[#635BFF]" />,
+  },
+  {
+    name: "TensorFlow",
+    category: "Machine Learning",
+    url: "https://www.tensorflow.org",
+    icon: <SiTensorflow className="text-xl text-[#FF6F00]" />,
+  },
+  {
+    name: "Cloudflare",
+    category: "Edge & Security",
+    url: "https://www.cloudflare.com",
+    icon: <SiCloudflare className="text-xl text-[#F38020]" />,
+  },
+  {
+    name: "Redis",
+    category: "In-Memory Cache",
+    url: "https://redis.io",
+    icon: <SiRedis className="text-xl text-[#DC382D]" />,
+  },
+  {
+    name: "Tailwind CSS",
+    category: "Modern Styling",
+    url: "https://tailwindcss.com",
+    icon: <SiTailwindcss className="text-xl text-[#06B6D4]" />,
+  },
+];
+
+// 8 Regional Academic & Community Chapters
+const COMMUNITY_PARTNERS: SponsorItem[] = [
+  {
+    name: "BIT Mesra",
+    category: "Premier Engineering",
+    url: "https://www.bitmesra.ac.in",
+    icon: <Building2 className="text-lg text-[#8AB4F8]" />,
+  },
+  {
+    name: "IIT (ISM) Dhanbad",
+    category: "Institute of Eminence",
+    url: "https://www.iitism.ac.in",
+    icon: <BookOpen className="text-lg text-[#FBBC04]" />,
+  },
+  {
+    name: "Women Techmakers",
+    category: "Diversity & Inclusion",
+    url: "https://developers.google.com/womentechmakers",
+    icon: <Users className="text-lg text-[#EA4335]" />,
   },
   {
     name: "Discord Developers",
-    role: "Real-time Developer Chat Hub",
+    category: "Community Chat Hub",
     url: "https://discord.gg/gdgranchi",
-    icon: <FaDiscord className="text-2xl text-[#5865F2]" />,
-    brandColor: "#5865F2",
+    icon: <FaDiscord className="text-lg text-[#5865F2]" />,
+  },
+  {
+    name: "JTU Jharkhand",
+    category: "State Technical Univ",
+    url: "https://www.jtu.ac.in",
+    icon: <GraduationCap className="text-lg text-[#34A853]" />,
   },
   {
     name: "Jharkhand Open Source",
-    role: "Regional Builder Collective",
+    category: "Regional Builder Guild",
     url: "https://gdgranchi.in",
-    icon: <Code2 className="text-2xl text-[#34A853]" />,
-    brandColor: "#34A853",
+    icon: <Code2 className="text-lg text-[#34A853]" />,
   },
   {
-    name: "Campus Tech Clubs",
-    role: "Student Innovators Network",
-    url: "https://gdgranchi.in",
-    icon: <Sparkles className="text-2xl text-[#FBBC04]" />,
-    brandColor: "#FBBC04",
+    name: "NIFFT Ranchi",
+    category: "Manufacturing Tech",
+    url: "http://www.nifft.ac.in",
+    icon: <Building2 className="text-lg text-[#EA4335]" />,
+  },
+  {
+    name: "Ranchi University",
+    category: "Academic Partner",
+    url: "https://www.ranchiuniversity.ac.in",
+    icon: <GraduationCap className="text-lg text-[#8AB4F8]" />,
   },
 ];
 
 export const SponsorsSec: React.FC = () => {
-  const handleSponsorshipInquiry = () => {
-    Swal.fire({
-      title: "Partner with GDG Ranchi",
-      html: `
-        <div style="text-align: left; font-size: 0.95rem; line-height: 1.6; color: #cbd5e1;">
-          <p style="margin-bottom: 12px;">
-            Sponsor upcoming hackathons, DevFest Ranchi, and developer workshops reaching over <strong>5,000+ engineers, students, and tech professionals</strong> across Jharkhand.
-          </p>
-          <div style="background: rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 14px;">
-            <div style="color: #4285F4; font-weight: bold; margin-bottom: 4px;">Available Partnership Opportunities:</div>
-            <ul style="margin: 0; padding-left: 20px; font-size: 0.85rem; color: #94a3b8;">
-              <li>Title & Flagship Conference Sponsor</li>
-              <li>Workshop & Hackathon Challenge Host</li>
-              <li>Swag, Cloud Credits & Platform Partner</li>
-              <li>Campus & Academic Venue Host</li>
-            </ul>
-          </div>
-          <p style="margin-bottom: 0; font-size: 0.9rem;">
-            Direct inquiries: <strong style="color: #34A853;">sponsors@gdgranchi.in</strong>
-          </p>
-        </div>
-      `,
-      icon: "info",
-      showCancelButton: true,
-      confirmButtonText: "Send Partnership Email",
-      cancelButtonText: "Close",
-      confirmButtonColor: "#4285F4",
-      cancelButtonColor: "#334155",
-      background: "#0d0d12",
-      color: "#ffffff",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.href =
-          "mailto:sponsors@gdgranchi.in?subject=GDG%20Ranchi%20Sponsorship%20Inquiry";
-      }
-    });
-  };
+  const containerRef = useRef<HTMLElement>(null);
 
-  const renderPartnerPill = (partner: SponsorCard) => (
-    <a
-      key={partner.name}
-      href={partner.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group relative flex items-center gap-3.5 rounded-2xl border border-white/[0.08] bg-[#0d0d12]/90 px-5 py-3.5 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:bg-[#15151c] hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)] shrink-0 w-[240px] sm:w-[270px]"
-    >
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/5 bg-black/40 transition-transform duration-300 group-hover:scale-105">
-        {partner.icon}
-      </div>
-      <div className="min-w-0 flex-1">
-        <h4 className="text-xs sm:text-sm font-bold text-white truncate transition-colors group-hover:text-[#8AB4F8]">
-          {partner.name}
-        </h4>
-        <p className="text-[11px] text-gray-400 truncate mt-0.5">{partner.role}</p>
-      </div>
-      <div className="text-gray-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:text-white shrink-0">
-        <ExternalLink size={13} />
-      </div>
-    </a>
+  useGSAP(
+    () => {
+      gsap.fromTo(
+        ".sponsor-card-anim",
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.05,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 80%",
+          },
+        },
+      );
+    },
+    { scope: containerRef },
   );
 
   return (
-    <section className="relative bg-[#060608] py-20 sm:py-28 text-white overflow-hidden">
-      {/* Background glow effects */}
-      <div className="pointer-events-none absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[600px] rounded-full bg-gradient-to-br from-[#4285F4]/10 via-[#34A853]/5 to-transparent blur-[140px]" />
+    <section
+      ref={containerRef}
+      id="sponsors"
+      className="relative overflow-x-clip bg-black px-5 py-20 sm:px-8 sm:py-24 md:px-12 lg:px-[8%] lg:py-[10vh] xl:px-[10%] text-white selection:bg-[#FBBC04]/30"
+    >
+      {/* Top subtle divider matching preceding sections */}
+      <div className="mb-14 sm:mb-16 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* High-contrast precision tech grid with radial edge mask for pure black bg */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.06] [mask-image:radial-gradient(ellipse_at_center,black_60%,transparent_95%)]"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.14) 1px, transparent 1px)
+          `,
+          backgroundSize: "40px 40px",
+        }}
+      />
+
+      {/* Vibrant Google-brand ambient glows for bg-black */}
+      <div className="pointer-events-none absolute -left-40 top-1/4 h-[450px] w-[450px] rounded-full bg-[#4285F4]/[0.08] blur-[150px]" />
+      <div className="pointer-events-none absolute -right-40 bottom-1/4 h-[450px] w-[450px] rounded-full bg-[#FBBC04]/[0.08] blur-[150px]" />
+      <div className="pointer-events-none absolute left-1/2 -top-24 -translate-x-1/2 h-[350px] w-[500px] rounded-full bg-[#EA4335]/[0.05] blur-[160px]" />
+
+      <div className="relative z-10 mx-auto max-w-7xl">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white/80 backdrop-blur-md">
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#4285F4]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#EA4335]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#FBBC04]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#34A853]" />
+        <div className="text-center max-w-3xl mx-auto">
+          {/* Badge */}
+          <div className="flex justify-center">
+            <span className="rounded-full border border-white/15 bg-white/[0.06] px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold uppercase tracking-[0.25em] text-white/80 backdrop-blur">
+              ✦ THANKS TO OUR SUPPORTERS
             </span>
-            OUR SUPPORTERS & SPONSORS
           </div>
 
-          <h2 className="mt-5 text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
-            Empowered by Leading{" "}
-            <span className="bg-gradient-to-r from-[#4285F4] via-[#EA4335] via-[#FBBC04] to-[#34A853] bg-clip-text text-transparent">
-              Partners & Platforms
+          {/* Title */}
+          <h2 className="mt-6 text-3xl sm:text-5xl md:text-6xl font-black tracking-[-0.04em] text-white leading-tight">
+            Our{" "}
+            <span className="bg-gradient-to-r from-[#FBBC04] via-[#EA4335] to-[#4285F4] bg-clip-text text-transparent">
+              Sponsors
             </span>
           </h2>
 
+          {/* Subtitle */}
           <p className="mt-4 text-sm sm:text-base text-gray-400 leading-relaxed max-w-2xl mx-auto">
-            From premier technical universities to global engineering tools, our supporters power
-            free developer education, hackathons, and community growth across Jharkhand.
+            Thanks to our sponsors for supporting DevFest Ranchi. Want to sponsor? Reach us at{" "}
+            <a
+              href="mailto:gdg.ranchi@gmail.com?subject=DevFest%20Ranchi%202026%20Sponsorship%20Inquiry"
+              className="font-semibold text-white underline underline-offset-4 decoration-[#FBBC04] hover:text-[#FBBC04] transition-colors"
+            >
+              gdg.ranchi@gmail.com
+            </a>
           </p>
         </div>
 
-        {/* Featured Presented By */}
-        <div className="mb-14">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
-            <a
-              href="https://developers.google.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-[#0d0d12]/90 p-5 transition-all duration-300 hover:border-[#4285F4]/40 hover:bg-[#13141c] hover:shadow-[0_10px_30px_rgba(66,133,244,0.15)]"
-            >
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 group-hover:scale-105 transition-transform">
-                  <FaGoogle className="text-3xl text-[#4285F4]" />
-                </div>
-                <div>
-                  <span className="inline-block rounded bg-[#4285F4]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#8AB4F8]">
-                    Presented By
-                  </span>
-                  <h3 className="text-base font-bold text-white group-hover:text-[#8AB4F8] transition-colors mt-0.5">
-                    Google for Developers
-                  </h3>
-                  <p className="text-xs text-gray-400">Global Community Program Partner</p>
-                </div>
-              </div>
-              <ArrowUpRight size={16} className="text-gray-500 group-hover:text-white transition-colors" />
-            </a>
+        {/* Sponsor Tiers */}
+        <div className="mt-12 sm:mt-16 space-y-12 sm:space-y-16">
+          {/* TIER 1: GOLD SPONSORS (6 Premier Cards) */}
+          <div className="text-center">
+            <div className="inline-block bg-[#FBBC04] border-2 border-black rounded-full px-5 py-1.5 text-xs font-black tracking-widest text-black shadow-[2px_2px_0_0_#000] uppercase hover:scale-105 transition-transform duration-200 cursor-default">
+              GOLD SPONSORS
+            </div>
 
-            <a
-              href="https://cloud.google.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-[#0d0d12]/90 p-5 transition-all duration-300 hover:border-[#34A853]/40 hover:bg-[#13141c] hover:shadow-[0_10px_30px_rgba(52,168,83,0.15)]"
-            >
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 group-hover:scale-105 transition-transform">
-                  <SiGooglecloud className="text-3xl text-[#34A853]" />
-                </div>
-                <div>
-                  <span className="inline-block rounded bg-[#34A853]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#81C995]">
-                    Cloud Partner
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mt-6 max-w-6xl mx-auto">
+              {GOLD_SPONSORS.map((sponsor) => (
+                <a
+                  key={sponsor.name}
+                  href={sponsor.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="sponsor-card-anim group relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-white/10 bg-[#09090d]/90 hover:border-[#FBBC04] hover:bg-[#111118] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_35px_rgba(251,188,4,0.18)] backdrop-blur-md overflow-hidden min-h-[120px]"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[#FBBC04]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                  <div className="flex items-center gap-3.5 w-full justify-center">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] transition-transform duration-300 group-hover:scale-110">
+                      {sponsor.icon}
+                    </div>
+                    <div className="text-left min-w-0">
+                      <h4 className="text-sm sm:text-base font-bold text-white transition-colors group-hover:text-[#FBBC04] truncate">
+                        {sponsor.name}
+                      </h4>
+                      <p className="text-[11px] text-gray-400 transition-colors group-hover:text-gray-300 truncate">
+                        {sponsor.category}
+                      </p>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* TIER 2: SILVER & TECH PARTNERS (12 Tech Cards) */}
+          <div className="text-center">
+            <div className="inline-block bg-white text-black border-2 border-black rounded-full px-5 py-1.5 text-xs font-black tracking-widest shadow-[2px_2px_0_0_#000] uppercase hover:scale-105 transition-transform duration-200 cursor-default">
+              SILVER & TECH PARTNERS
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 mt-6 max-w-6xl mx-auto">
+              {SILVER_SPONSORS.map((sponsor) => (
+                <a
+                  key={sponsor.name}
+                  href={sponsor.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="sponsor-card-anim group relative flex flex-col items-center justify-center p-4 rounded-xl border border-white/10 bg-[#09090c]/80 hover:border-white/30 hover:bg-[#121217] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(255,255,255,0.08)] backdrop-blur-sm min-h-[88px]"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.04] mb-2 transition-transform duration-200 group-hover:scale-110">
+                    {sponsor.icon}
+                  </div>
+                  <span className="text-xs font-bold text-white/80 group-hover:text-white transition-colors truncate max-w-full px-1">
+                    {sponsor.name}
                   </span>
-                  <h3 className="text-base font-bold text-white group-hover:text-[#81C995] transition-colors mt-0.5">
-                    Google Cloud
-                  </h3>
-                  <p className="text-xs text-gray-400">AI Infrastructure & Credits Partner</p>
-                </div>
-              </div>
-              <ArrowUpRight size={16} className="text-gray-500 group-hover:text-white transition-colors" />
-            </a>
+                  <span className="text-[10px] text-gray-400 truncate max-w-full">
+                    {sponsor.category}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* TIER 3: ACADEMIC & REGIONAL CHAPTERS (8 Institutions) */}
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.05] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-white/75">
+              <Sparkles size={12} className="text-[#34A853]" />
+              Academic & Regional Chapters
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 mt-5 max-w-6xl mx-auto">
+              {COMMUNITY_PARTNERS.map((partner) => (
+                <a
+                  key={partner.name}
+                  href={partner.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="sponsor-card-anim group relative flex flex-col items-center justify-center p-3.5 rounded-xl border border-white/10 bg-[#08080a]/60 hover:border-white/25 hover:bg-[#101015] transition-all duration-200 hover:-translate-y-0.5 backdrop-blur-sm min-h-[82px]"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.03] mb-1.5 transition-transform duration-200 group-hover:scale-105">
+                    {partner.icon}
+                  </div>
+                  <span className="text-xs font-semibold text-white/80 group-hover:text-[#8AB4F8] transition-colors truncate max-w-full px-1">
+                    {partner.name}
+                  </span>
+                  <span className="text-[10px] text-gray-400 truncate max-w-full">
+                    {partner.category}
+                  </span>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Dynamic Moving Marquees: Education -> Tech & Tools -> Community */}
-        <div className="space-y-8">
-          {/* TRACK 1: Education Partners (Moving Left to Right) */}
-          <div>
-            <div className="flex items-center justify-between mb-3 px-2">
-              <div className="flex items-center gap-2">
-                <GraduationCap size={15} className="text-[#8AB4F8]" />
-                <span className="text-xs font-bold uppercase tracking-widest text-[#8AB4F8]">
-                  Education & University Partners
-                </span>
-              </div>
-              <span className="text-[11px] text-gray-500">Left to right</span>
-            </div>
-            <MarqueeWall direction="right" speedSeconds={32} gapClass="gap-4 sm:gap-5">
-              {EDUCATION_PARTNERS.map(renderPartnerPill)}
-            </MarqueeWall>
-          </div>
-
-          {/* TRACK 2: Tech & Tool Partners (Moving) */}
-          <div>
-            <div className="flex items-center justify-between mb-3 px-2">
-              <div className="flex items-center gap-2">
-                <Code2 size={15} className="text-[#34A853]" />
-                <span className="text-xs font-bold uppercase tracking-widest text-[#81C995]">
-                  Tech & Tools Platforms
-                </span>
-              </div>
-              <span className="text-[11px] text-gray-500">Continuous loop</span>
-            </div>
-            <MarqueeWall direction="left" speedSeconds={42} gapClass="gap-4 sm:gap-5">
-              {TECH_TOOLS_PARTNERS.map(renderPartnerPill)}
-            </MarqueeWall>
-          </div>
-
-          {/* TRACK 3: Community & Ecosystem Partners (Moving) */}
-          <div>
-            <div className="flex items-center justify-between mb-3 px-2">
-              <div className="flex items-center gap-2">
-                <Users size={15} className="text-[#FBBC04]" />
-                <span className="text-xs font-bold uppercase tracking-widest text-[#FDD663]">
-                  Community & Inclusion Partners
-                </span>
-              </div>
-              <span className="text-[11px] text-gray-500">Left to right</span>
-            </div>
-            <MarqueeWall direction="right" speedSeconds={28} gapClass="gap-4 sm:gap-5">
-              {COMMUNITY_PARTNERS.map(renderPartnerPill)}
-            </MarqueeWall>
-          </div>
-        </div>
-
-        {/* Simple & Clean Partner Callout */}
-        <div className="mt-16 max-w-3xl mx-auto rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8 backdrop-blur-md text-center">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#34A853] mb-2">
-            <Handshake size={15} />
-            <span>Support The Next Generation</span>
-          </div>
-          <h3 className="text-xl sm:text-2xl font-bold text-white">
-            Want to Sponsor GDG Ranchi & DevFest 2026?
-          </h3>
-          <p className="mt-2 text-xs sm:text-sm text-gray-400 max-w-xl mx-auto">
-            Connect directly with high-impact developers, tech students, and leaders through custom conference tracks, challenge hackathons, and recruitment booths.
-          </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              onClick={handleSponsorshipInquiry}
-              className="flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-black transition-all hover:bg-gray-200 active:scale-95 shadow-md"
-            >
-              <Mail size={14} />
-              <span>Become a Sponsor</span>
-            </button>
-            <a
-              href="mailto:sponsors@gdgranchi.in"
-              className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-xs font-semibold text-gray-300 transition-all hover:border-white/20 hover:text-white"
-            >
-              <span>sponsors@gdgranchi.in</span>
-            </a>
-          </div>
+        {/* Primary CTA Button */}
+        <div className="text-center mt-12 sm:mt-16">
+          <a
+            href="mailto:gdg.ranchi@gmail.com?subject=DevFest%20Ranchi%202026%20Sponsorship%20Inquiry"
+            className="group inline-flex items-center gap-2.5 px-8 py-3.5 bg-white text-black hover:bg-neutral-200 rounded-full font-bold text-sm tracking-wide transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_30px_rgba(255,255,255,0.2)]"
+          >
+            Become a Sponsor
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-200 group-hover:translate-x-1"
+            />
+          </a>
         </div>
       </div>
     </section>

@@ -28,6 +28,7 @@ First off, thank you for considering contributing to the GDG Ranchi Frontend pro
 ## Reporting Bugs
 
 If you find a bug, please create an issue on GitHub with:
+
 - A clear description of the problem.
 - Steps to reproduce the bug.
 - The browser and operating system you're using.

@@ -95,7 +95,9 @@ const ViewSingleEventPage = () => {
             {/* Timeline Section */}
             {event.timeline && event.timeline.length > 0 && (
               <div className="rounded-2xl border border-white/[0.08] bg-[#0b0d0e] p-6 sm:p-8">
-                <h3 className="text-2xl font-semibold tracking-tight text-white mb-6">Event Timeline</h3>
+                <h3 className="text-2xl font-semibold tracking-tight text-white mb-6">
+                  Event Timeline
+                </h3>
                 <Timeline timeline={event.timeline} />
               </div>
             )}
@@ -114,7 +116,7 @@ const ViewSingleEventPage = () => {
                     <RulesList items={event.rules} />
                   </div>
                 )}
-                
+
                 {event.requirements?.length > 0 && (
                   <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#111315] via-[#0b0d0e] to-[#070808] p-6">
                     <div className="mb-6 flex items-center gap-3">

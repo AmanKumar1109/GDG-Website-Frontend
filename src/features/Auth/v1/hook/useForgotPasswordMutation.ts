@@ -22,7 +22,7 @@ export const useForgotPasswordMutation = () => {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
-        }
+        },
       );
       return response.data;
     },

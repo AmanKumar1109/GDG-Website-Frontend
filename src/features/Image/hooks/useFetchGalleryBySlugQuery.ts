@@ -34,7 +34,7 @@ export const useFetchGalleryBySlugQuery = (slug?: string) => {
       if (!slug) return null;
       try {
         const response = await api.get<FetchGalleryBySlugResponse>(
-          `/api/v1/find/galleryBySlug/${encodeURIComponent(slug)}`
+          `/api/v1/find/galleryBySlug/${encodeURIComponent(slug)}`,
         );
         const data = response.data?.data;
         if (Array.isArray(data)) {
