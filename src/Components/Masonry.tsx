@@ -107,6 +107,7 @@ interface MasonryProps {
   enableHoverZoom?: boolean;
   enableHoverShadow?: boolean;
   openInNewTab?: boolean;
+  onItemClick?: (item: Item) => void;
 }
 
 const Masonry: React.FC<MasonryProps> = ({
@@ -125,6 +126,7 @@ const Masonry: React.FC<MasonryProps> = ({
   enableHoverZoom = true,
   enableHoverShadow = true,
   openInNewTab = true,
+  onItemClick,
 }) => {
   const columns = useMedia(
     ["(min-width: 1536px)", "(min-width: 1280px)", "(min-width: 1024px)", "(min-width: 640px)"],
@@ -373,7 +375,13 @@ const Masonry: React.FC<MasonryProps> = ({
               willChange: "transform, width, height, opacity",
               transform: `translate3d(${item.x}px, ${item.y}px, 0px)`,
             }}
-            onClick={() => handleClick(item.url)}
+            onClick={() => {
+              if (onItemClick) {
+                onItemClick(item);
+              } else {
+                handleClick(item.url);
+              }
+            }}
             onMouseEnter={(e) => handleMouseEnter(e.currentTarget)}
             onMouseLeave={(e) => handleMouseLeave(e.currentTarget)}
           >
@@ -388,7 +396,7 @@ const Masonry: React.FC<MasonryProps> = ({
               decoding="async"
 
               onLoad={() => handleImageLoad(item.id)}
-              className={`h-full w-full object-cover transition-opacity duration-500 ${
+              className={`h-full w-full object-cover transition-all duration-500 ${
                 isLoaded ? "opacity-100" : "opacity-0"
               }`}
               style={{

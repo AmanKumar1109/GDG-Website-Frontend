@@ -38,11 +38,15 @@ const AppRoutes = () => {
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/Gallery/:GalleryName" element={<ImagePage />} />
         <Route path="/gallery/:GalleryName" element={<ImagePage />} />
+        <Route path="/image/:Slug" element={<ImagePage />} />
+        <Route path="/images/:Slug" element={<ImagePage />} />
         <Route path="/event/:Slug" element={<EventDetailPage />} />
         <Route path="/teams" element={<ViewAllTeamPage />} />
         <Route path="/team" element={<ViewAllTeamPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot" element={<ForgotPasswordOtp />} />
+        <Route path="/images/upload" element={<Navigate to="/member/images/upload" replace />} />
+        <Route path="/images" element={<Navigate to="/member/images" replace />} />
       </Route>
       <Route path="/maintenance" element={<MaintenancePage />} />
       <Route path="/launching-soon" element={<LaunchingSoon />} />

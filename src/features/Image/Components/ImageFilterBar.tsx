@@ -13,6 +13,8 @@ interface ImageFilterBarProps {
   onUploaderChange: (uploader: string) => void;
   onResetFilters: () => void;
   hasActiveFilters: boolean;
+  albumOptions?: string[];
+  eventOptions?: string[];
 }
 
 const ImageFilterBar = ({
@@ -28,6 +30,8 @@ const ImageFilterBar = ({
   onUploaderChange,
   onResetFilters,
   hasActiveFilters,
+  albumOptions,
+  eventOptions,
 }: ImageFilterBarProps) => {
   return (
     <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between w-full">
@@ -68,18 +72,21 @@ const ImageFilterBar = ({
             <option value="All" className="bg-[#161a1f] text-white">
               All Albums
             </option>
-            <option value="Jharkhand Tech Summit 2026" className="bg-[#161a1f] text-white">
-              Jharkhand Tech Summit 2026
-            </option>
-            <option value="MERN Stack Workshop" className="bg-[#161a1f] text-white">
-              MERN Stack Workshop
-            </option>
-            <option value="Dev Connect Meetup" className="bg-[#161a1f] text-white">
-              Dev Connect Meetup
-            </option>
-            <option value="AI in Action - Tech Talk" className="bg-[#161a1f] text-white">
-              AI in Action
-            </option>
+            {(albumOptions && albumOptions.length > 0
+              ? albumOptions
+              : [
+                  "Women Techmakers Ranchi Meetup",
+                  "DevFest Ranchi 2025",
+                  "Jharkhand Tech Summit 2026",
+                  "MERN Stack Workshop",
+                  "Dev Connect Meetup",
+                  "AI in Action - Tech Talk",
+                ]
+            ).map((album) => (
+              <option key={album} value={album} className="bg-[#161a1f] text-white">
+                {album}
+              </option>
+            ))}
           </select>
           <ChevronDown
             size={15}
@@ -97,18 +104,21 @@ const ImageFilterBar = ({
             <option value="All" className="bg-[#161a1f] text-white">
               All Events
             </option>
-            <option value="JTS 2026" className="bg-[#161a1f] text-white">
-              JTS 2026
-            </option>
-            <option value="MERN Workshop" className="bg-[#161a1f] text-white">
-              MERN Workshop
-            </option>
-            <option value="Dev Connect" className="bg-[#161a1f] text-white">
-              Dev Connect
-            </option>
-            <option value="AI Talk" className="bg-[#161a1f] text-white">
-              AI Talk
-            </option>
+            {(eventOptions && eventOptions.length > 0
+              ? eventOptions
+              : [
+                  "DevFest Ranchi",
+                  "WTM Ranchi",
+                  "JTS 2026",
+                  "MERN Workshop",
+                  "Dev Connect",
+                  "AI Talk",
+                ]
+            ).map((evt) => (
+              <option key={evt} value={evt} className="bg-[#161a1f] text-white">
+                {evt}
+              </option>
+            ))}
           </select>
           <ChevronDown
             size={15}

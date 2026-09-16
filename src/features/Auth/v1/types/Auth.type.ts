@@ -49,16 +49,19 @@ export interface Permission {
 
 export interface User {
   _id: string;
+  id?: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   role: string;
-  passwordHash: string;
-  emailVerified: boolean;
-  failedLoginAttempts: number;
-  isBanned: boolean;
-  refreshTokens: string[]; // Assuming array of strings (tokens)
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-  __v: number;
+  passwordHash?: string;
+  emailVerified?: boolean;
+  failedLoginAttempts?: number;
+  isBanned?: boolean;
+  refreshTokens?: string[]; // Assuming array of strings (tokens)
+  createdAt?: string; // ISO date string
+  updatedAt?: string; // ISO date string
+  __v?: number;
 }
 
 export interface LoginData {

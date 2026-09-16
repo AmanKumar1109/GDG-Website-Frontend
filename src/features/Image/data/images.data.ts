@@ -15,6 +15,9 @@ export interface ImageItem {
   dimensions?: string;
   tags?: string[];
   createdDate?: string;
+  albumSlug?: string;
+  galleryId?: string;
+  publicId?: string;
 }
 
 export interface ImageStats {
