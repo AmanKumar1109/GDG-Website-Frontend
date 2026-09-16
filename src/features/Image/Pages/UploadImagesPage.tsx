@@ -14,7 +14,6 @@ import useAuth from "../../Auth/v1/store/useAuth";
 
 import {
   initialImageFormData,
-  initialImagesList,
   type ImageItem,
   type ImageFormat,
 } from "../data/images.data";
@@ -173,18 +172,18 @@ const UploadImagesPage = () => {
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "") ||
-        "wtm-ranchi-meetup";
+        "";
       const galleryId = matchedAlbum?._id;
 
       const newImage: ImageItem = {
         id: `img-${Date.now()}`,
         publicId: uploaderAuthId,
         fileName: form.title || selectedFile.name,
-        albumName: matchedAlbum?.title || form.album || "Women Techmakers Ranchi Meetup",
+        albumName: matchedAlbum?.title || form.album || "",
         albumSlug,
         galleryId,
-        eventName: form.event || "DevFest Ranchi",
-        eventShort: form.event?.slice(0, 7) || "DF 2025",
+        eventName: form.event || "",
+        eventShort: form.event?.slice(0, 7) || "",
         format: (selectedFile.format?.toUpperCase() === "PNG"
           ? "PNG"
           : selectedFile.format?.toUpperCase() === "WEBP"
@@ -223,7 +222,7 @@ const UploadImagesPage = () => {
         const list: ImageItem[] =
           stored && stored !== "undefined" && stored !== "null"
             ? JSON.parse(stored)
-            : initialImagesList;
+            : [];
         localStorage.setItem("gdg_managed_images", JSON.stringify([newImage, ...list]));
         localStorage.removeItem("gdg_image_draft");
       } catch {

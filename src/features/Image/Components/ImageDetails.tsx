@@ -2,12 +2,8 @@ import { useMemo } from "react";
 import { ImageIcon, Loader2 } from "lucide-react";
 import type { ImageFormData } from "../types/image.type";
 import VisibilitySelector from "./VisibilitySelector";
-import useFetchAllEventNamesQuery, {
-  FALLBACK_EVENT_NAMES,
-} from "../../Event/hook/useFetchAllEventNamesQuery";
-import useFetchAllAlbumNamesQuery, {
-  FALLBACK_ALBUM_NAMES,
-} from "../hooks/useFetchAllAlbumNamesQuery";
+import useFetchAllEventNamesQuery from "../../Event/hook/useFetchAllEventNamesQuery";
+import useFetchAllAlbumNamesQuery from "../hooks/useFetchAllAlbumNamesQuery";
 
 interface Props {
   form: ImageFormData;
@@ -18,24 +14,24 @@ const ImageDetails = ({ form, update }: Props) => {
   const { data: eventNamesData, isLoading: isEventsLoading } = useFetchAllEventNamesQuery();
   const { data: albumNamesData, isLoading: isAlbumsLoading } = useFetchAllAlbumNamesQuery();
 
-  const eventList = useMemo(() => {
+  const eventList: string[] = useMemo(() => {
     if (Array.isArray(eventNamesData) && eventNamesData.length > 0) {
       const titles = eventNamesData
         .map((ev: any) => (typeof ev === "string" ? ev : ev?.title)?.trim())
         .filter((t: any): t is string => Boolean(t));
       return [...new Set(titles)];
     }
-    return FALLBACK_EVENT_NAMES.map((e) => e.title);
+    return [];
   }, [eventNamesData]);
 
-  const albumList = useMemo(() => {
+  const albumList: string[] = useMemo(() => {
     if (Array.isArray(albumNamesData) && albumNamesData.length > 0) {
       const titles = albumNamesData
         .map((alb: any) => (typeof alb === "string" ? alb : alb?.title)?.trim())
         .filter((t: any): t is string => Boolean(t));
       return [...new Set(titles)];
     }
-    return FALLBACK_ALBUM_NAMES.map((a) => a.title);
+    return [];
   }, [albumNamesData]);
 
   return (
@@ -104,7 +100,7 @@ const ImageDetails = ({ form, update }: Props) => {
             >
               <option value="">{isEventsLoading ? "Loading events..." : "Select event"}</option>
 
-              {eventList.map((event) => (
+              {eventList.map((event: string) => (
                 <option key={event} value={event}>
                   {event}
                 </option>
@@ -131,7 +127,7 @@ const ImageDetails = ({ form, update }: Props) => {
             >
               <option value="">{isAlbumsLoading ? "Loading albums..." : "Select album"}</option>
 
-              {albumList.map((album) => (
+              {albumList.map((album: string) => (
                 <option key={album} value={album}>
                   {album}
                 </option>
