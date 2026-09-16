@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Upload, Download, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { initialImagesList, type ImageItem } from "../data/images.data";
+import type { ImageItem } from "../data/images.data";
 import ImageStatsCards from "../Components/ImageStatsCards";
 import ImageFilterBar from "../Components/ImageFilterBar";
 import ImageBulkActionsBar from "../Components/ImageBulkActionsBar";
@@ -74,7 +74,7 @@ const ManageImagesPage = () => {
     } catch {
       // fallback
     }
-    return initialImagesList;
+    return [];
   });
 
   // Sync to localStorage
@@ -333,7 +333,7 @@ const ManageImagesPage = () => {
         a.title?.toLowerCase() === newImageData.albumName?.toLowerCase() ||
         a.slug?.toLowerCase() === newImageData.albumName?.toLowerCase(),
     );
-    const albumSlug = matchedAlbum?.slug || "wtm-ranchi-meetup";
+    const albumSlug = matchedAlbum?.slug || "";
     const galleryId = matchedAlbum?._id;
 
     const newImage: ImageItem = {
