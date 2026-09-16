@@ -228,13 +228,6 @@ const Events = () => {
 
   const { data, isPending, isLoading, isFetching, isError, error, refetch } =
     useFetchEventWithFilter(apiFilters);
-  const [minLoadingTimePassed, setMinLoadingTimePassed] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMinLoadingTimePassed(true);
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
 
 
   const events = data?.events ?? [];

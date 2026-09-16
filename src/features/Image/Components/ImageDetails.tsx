@@ -1,7 +1,9 @@
-import { ImageIcon } from "lucide-react";
+import { useMemo } from "react";
+import { ImageIcon, Loader2 } from "lucide-react";
 import type { ImageFormData } from "../types/image.type";
-import { albumOptions, eventOptions } from "../data/images.data";
 import VisibilitySelector from "./VisibilitySelector";
+import useFetchAllEventNamesQuery from "../../Event/hook/useFetchAllEventNamesQuery";
+import useFetchAllAlbumNamesQuery from "../hooks/useFetchAllAlbumNamesQuery";
 
 interface Props {
   form: ImageFormData;
@@ -9,6 +11,29 @@ interface Props {
 }
 
 const ImageDetails = ({ form, update }: Props) => {
+  const { data: eventNamesData, isLoading: isEventsLoading } = useFetchAllEventNamesQuery();
+  const { data: albumNamesData, isLoading: isAlbumsLoading } = useFetchAllAlbumNamesQuery();
+
+  const eventList: string[] = useMemo(() => {
+    if (Array.isArray(eventNamesData) && eventNamesData.length > 0) {
+      const titles = eventNamesData
+        .map((ev: any) => (typeof ev === "string" ? ev : ev?.title)?.trim())
+        .filter((t: any): t is string => Boolean(t));
+      return [...new Set(titles)];
+    }
+    return [];
+  }, [eventNamesData]);
+
+  const albumList: string[] = useMemo(() => {
+    if (Array.isArray(albumNamesData) && albumNamesData.length > 0) {
+      const titles = albumNamesData
+        .map((alb: any) => (typeof alb === "string" ? alb : alb?.title)?.trim())
+        .filter((t: any): t is string => Boolean(t));
+      return [...new Set(titles)];
+    }
+    return [];
+  }, [albumNamesData]);
+
   return (
     <section className="rounded-xl border border-white/[0.07] bg-[#151a20]">
       <div className="border-b border-white/[0.06] px-5 py-4">
@@ -57,18 +82,25 @@ const ImageDetails = ({ form, update }: Props) => {
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
-            <label className="mb-2 block text-xs font-medium text-zinc-400">
-              Event <span className="text-red-400">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-medium text-zinc-400">
+                Event <span className="text-red-400">*</span>
+              </label>
+              {isEventsLoading && (
+                <span className="flex items-center gap-1 text-[10px] text-emerald-400">
+                  <Loader2 size={10} className="animate-spin" /> Loading
+                </span>
+              )}
+            </div>
 
             <select
               value={form.event}
               onChange={(event) => update("event", event.target.value)}
               className="h-10 w-full rounded-lg border border-white/[0.08] bg-[#1a2027] px-3 text-xs text-zinc-300 outline-none focus:border-emerald-500/50"
             >
-              <option value="">Select event</option>
+              <option value="">{isEventsLoading ? "Loading events..." : "Select event"}</option>
 
-              {eventOptions.map((event) => (
+              {eventList.map((event: string) => (
                 <option key={event} value={event}>
                   {event}
                 </option>
@@ -77,18 +109,25 @@ const ImageDetails = ({ form, update }: Props) => {
           </div>
 
           <div>
-            <label className="mb-2 block text-xs font-medium text-zinc-400">
-              Album <span className="text-red-400">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-medium text-zinc-400">
+                Album <span className="text-red-400">*</span>
+              </label>
+              {isAlbumsLoading && (
+                <span className="flex items-center gap-1 text-[10px] text-emerald-400">
+                  <Loader2 size={10} className="animate-spin" /> Loading
+                </span>
+              )}
+            </div>
 
             <select
               value={form.album}
               onChange={(event) => update("album", event.target.value)}
               className="h-10 w-full rounded-lg border border-white/[0.08] bg-[#1a2027] px-3 text-xs text-zinc-300 outline-none focus:border-emerald-500/50"
             >
-              <option value="">Select album</option>
+              <option value="">{isAlbumsLoading ? "Loading albums..." : "Select album"}</option>
 
-              {albumOptions.map((album) => (
+              {albumList.map((album: string) => (
                 <option key={album} value={album}>
                   {album}
                 </option>

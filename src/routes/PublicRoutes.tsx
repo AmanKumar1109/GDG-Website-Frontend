@@ -24,6 +24,8 @@ const PublicRoutes = () => {
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/Gallery/:GalleryName" element={<ImagePage />} />
         <Route path="/gallery/:GalleryName" element={<ImagePage />} />
+        <Route path="/image/:Slug" element={<ImagePage />} />
+        <Route path="/images/:Slug" element={<ImagePage />} />
         {/* <Route path="*" element={<NotFound />} /> */}
         <Route path="/event/:Slug" element={<EventDetailPage />} />
         <Route path="/teams" element={<ViewAllTeamPage />} />

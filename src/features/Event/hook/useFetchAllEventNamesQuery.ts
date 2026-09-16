@@ -4,6 +4,7 @@ import api from "../../../utils/axios.utils";
 export interface EventNameItem {
   _id?: string;
   title: string;
+  Slug?: string;
 }
 
 export interface FetchEventNamesResponse {

@@ -7,10 +7,13 @@ import ImagePreview from "../Components/ImagePreview";
 import ImageSettings from "../Components/ImageSettings";
 import Swal from "sweetalert2";
 import uploadImage from "../../../utils/uploadImage";
+import api from "../../../utils/axios.utils";
+import { useQueryClient } from "@tanstack/react-query";
+import { useFetchAllAlbumNamesQuery } from "../hooks/useFetchAllAlbumNamesQuery";
+import useAuth from "../../Auth/v1/store/useAuth";
 
 import {
   initialImageFormData,
-  initialImagesList,
   type ImageItem,
   type ImageFormat,
 } from "../data/images.data";
@@ -19,6 +22,9 @@ import type { ImageFormData, SelectedImageFile } from "../types/image.type";
 
 const UploadImagesPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { data: albumNamesData } = useFetchAllAlbumNamesQuery();
 
   const [form, setForm] = useState<ImageFormData>(() => {
     try {
@@ -147,12 +153,37 @@ const UploadImagesPage = () => {
         }
       }
 
+      const uploaderAuthId = user?._id || user?.id || "admin-user-001";
+      const uploaderName = user?.firstName
+        ? `${user.firstName} ${user.lastName || ""}`.trim()
+        : "Community Lead";
+
+      // Resolve exact album slug and gallery ID from backend albumNamesData
+      const selectedAlbumName = form.album?.trim() || "";
+      const matchedAlbum = albumNamesData?.find(
+        (a: any) =>
+          a.title?.toLowerCase() === selectedAlbumName.toLowerCase() ||
+          a.slug?.toLowerCase() === selectedAlbumName.toLowerCase() ||
+          a._id === selectedAlbumName,
+      );
+      const albumSlug =
+        matchedAlbum?.slug ||
+        selectedAlbumName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "") ||
+        "";
+      const galleryId = matchedAlbum?._id;
+
       const newImage: ImageItem = {
         id: `img-${Date.now()}`,
+        publicId: uploaderAuthId,
         fileName: form.title || selectedFile.name,
-        albumName: form.album || "DevFest Ranchi 2025",
-        eventName: form.event || "DevFest Ranchi",
-        eventShort: form.event?.slice(0, 7) || "DF 2025",
+        albumName: matchedAlbum?.title || form.album || "",
+        albumSlug,
+        galleryId,
+        eventName: form.event || "",
+        eventShort: form.event?.slice(0, 7) || "",
         format: (selectedFile.format?.toUpperCase() === "PNG"
           ? "PNG"
           : selectedFile.format?.toUpperCase() === "WEBP"
@@ -160,18 +191,38 @@ const UploadImagesPage = () => {
             : "JPG") as ImageFormat,
         size: selectedFile.size,
         dimensions: selectedFile.dimensions || "1920 × 1080",
-        uploader: "Community Lead",
+        uploader: uploaderName,
         timeAgo: "Just now",
         url: finalUrl,
         tags: form.tags || ["New", "Community"],
       };
+
+      // Sync with backend Gallery API for the selected album
+      try {
+        await api.post("/api/v1/image", {
+          slug: albumSlug,
+          galleryId,
+          image: {
+            url: finalUrl,
+            publicId: uploaderAuthId,
+            caption: form.title || selectedFile.name,
+            featured: false,
+          },
+        });
+
+        queryClient.invalidateQueries({ queryKey: ["galleryBySlug"] });
+        queryClient.invalidateQueries({ queryKey: ["gallery"] });
+        queryClient.invalidateQueries({ queryKey: ["allAlbumNames"] });
+      } catch (syncErr) {
+        console.warn("Backend album sync note:", syncErr);
+      }
 
       try {
         const stored = localStorage.getItem("gdg_managed_images");
         const list: ImageItem[] =
           stored && stored !== "undefined" && stored !== "null"
             ? JSON.parse(stored)
-            : initialImagesList;
+            : [];
         localStorage.setItem("gdg_managed_images", JSON.stringify([newImage, ...list]));
         localStorage.removeItem("gdg_image_draft");
       } catch {

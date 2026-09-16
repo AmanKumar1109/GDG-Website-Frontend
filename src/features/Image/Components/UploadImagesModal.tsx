@@ -1,14 +1,24 @@
 import { useState, useRef } from "react";
 import { X, UploadCloud, Image, Sparkles } from "lucide-react";
 import type { ImageItem } from "../data/images.data";
+import useAuth from "../../Auth/v1/store/useAuth";
 
 interface UploadImagesModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUploadImage: (image: Omit<ImageItem, "id" | "timeAgo">) => void;
+  albumOptions?: string[];
+  eventOptions?: string[];
 }
 
-const UploadImagesModal = ({ isOpen, onClose, onUploadImage }: UploadImagesModalProps) => {
+const UploadImagesModal = ({
+  isOpen,
+  onClose,
+  onUploadImage,
+  albumOptions,
+  eventOptions,
+}: UploadImagesModalProps) => {
+  const { user } = useAuth();
   const [selectedAlbum, setSelectedAlbum] = useState("Jharkhand Tech Summit 2026");
   const [selectedEvent, setSelectedEvent] = useState("JTS 2026");
   const [tagsInput, setTagsInput] = useState("Keynote, Summit, 2026");
@@ -61,7 +71,9 @@ const UploadImagesModal = ({ isOpen, onClose, onUploadImage }: UploadImagesModal
       albumName: selectedAlbum,
       eventName: selectedAlbum,
       eventShort: selectedEvent,
-      uploader: "Abhishek Gupta",
+      uploader: user?.firstName
+        ? `${user.firstName} ${user.lastName || ""}`.trim()
+        : "Abhishek Gupta",
       size: fileSize || "3.5 MB",
       format,
       tags,
@@ -163,30 +175,47 @@ const UploadImagesModal = ({ isOpen, onClose, onUploadImage }: UploadImagesModal
                 onChange={(e) => setSelectedAlbum(e.target.value)}
                 className="w-full rounded-xl border border-[#232830] bg-[#121519] px-3 py-2 text-xs text-white focus:border-[#22c55e] focus:outline-none"
               >
-                <option value="Jharkhand Tech Summit 2026" className="bg-[#161a1f] text-white">
-                  Jharkhand Tech Summit 2026
-                </option>
-                <option value="MERN Stack Workshop" className="bg-[#161a1f] text-white">
-                  MERN Stack Workshop
-                </option>
-                <option value="Dev Connect Meetup" className="bg-[#161a1f] text-white">
-                  Dev Connect Meetup
-                </option>
-                <option value="AI in Action - Tech Talk" className="bg-[#161a1f] text-white">
-                  AI in Action - Tech Talk
-                </option>
+                {(albumOptions && albumOptions.length > 0
+                  ? albumOptions
+                  : [
+                      "Women Techmakers Ranchi Meetup",
+                      "DevFest Ranchi 2025",
+                      "Jharkhand Tech Summit 2026",
+                      "MERN Stack Workshop",
+                      "Dev Connect Meetup",
+                      "AI in Action - Tech Talk",
+                    ]
+                ).map((album) => (
+                  <option key={album} value={album} className="bg-[#161a1f] text-white">
+                    {album}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-white/60 mb-1.5">Event Tag</label>
-              <input
-                type="text"
+              <label className="block text-xs font-medium text-white/60 mb-1.5">Event</label>
+              <select
                 value={selectedEvent}
                 onChange={(e) => setSelectedEvent(e.target.value)}
-                placeholder="e.g. JTS 2026"
-                className="w-full rounded-xl border border-[#232830] bg-[#121519] px-3.5 py-2 text-xs text-white placeholder-white/30 focus:border-[#22c55e] focus:outline-none"
-              />
+                className="w-full rounded-xl border border-[#232830] bg-[#121519] px-3 py-2 text-xs text-white focus:border-[#22c55e] focus:outline-none"
+              >
+                {(eventOptions && eventOptions.length > 0
+                  ? eventOptions
+                  : [
+                      "DevFest Ranchi",
+                      "WTM Ranchi",
+                      "JTS 2026",
+                      "MERN Workshop",
+                      "Dev Connect",
+                      "AI Talk",
+                    ]
+                ).map((evt) => (
+                  <option key={evt} value={evt} className="bg-[#161a1f] text-white">
+                    {evt}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

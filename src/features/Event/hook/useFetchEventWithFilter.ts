@@ -1,7 +1,5 @@
-
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../utils/axios.utils";
-
 
 export interface EventFilters {
   page: number;
@@ -10,98 +8,6 @@ export interface EventFilters {
   category?: string;
   tags?: string;
   status?: string;
-}
-
-const allFallbackEvents: PublicEvent[] = [
-  {
-    _id: singleEventData._id || "event-jharkhand-tech-summit-2026",
-    Slug: singleEventData.Slug || "jharkhand-tech-summit-2026",
-    title: singleEventData.title,
-    shortDescription: singleEventData.shortDescription,
-    tags: singleEventData.tags,
-    category: singleEventData.category,
-    visibility: singleEventData.visibility,
-    status: singleEventData.status,
-    coverImageUrl: singleEventData.coverImageUrl,
-    registrationStartAt: singleEventData.registrationStartAt,
-    registrationEndAt: singleEventData.registrationEndAt,
-    venue: singleEventData.venue,
-    redirectUrl: singleEventData.redirectUrl,
-  },
-  ...fallbackUpcomingEvents.map((e, index) => ({
-    _id: e._id || `upcoming-fallback-${index}`,
-    Slug: e.Slug || `upcoming-event-${index}`,
-    title: e.title,
-    shortDescription: e.shortDescription,
-    tags: e.tags,
-    category: e.category,
-    visibility: e.visibility,
-    status: e.status,
-    coverImageUrl: e.coverImageUrl,
-    registrationStartAt: e.registrationStartAt,
-    registrationEndAt: e.registrationEndAt,
-    venue: e.venue,
-    redirectUrl: e.redirectUrl,
-  })),
-  ...fallbackPastEvents.map((e, index) => ({
-    _id: e._id || `past-fallback-${index}`,
-    Slug: e.Slug || `past-event-${index}`,
-    title: e.title,
-    shortDescription: e.shortDescription,
-    tags: e.tags,
-    category: e.category,
-    visibility: e.visibility,
-    status: e.status,
-    coverImageUrl: e.coverImageUrl,
-    registrationStartAt: e.registrationStartAt,
-    registrationEndAt: e.registrationEndAt,
-    venue: e.venue,
-    redirectUrl: e.redirectUrl,
-  })),
-];
-
-function getFallbackFilteredEvents(filters: EventFilters) {
-  let filtered = [...allFallbackEvents];
-
-  if (filters.search) {
-    const q = filters.search.toLowerCase();
-    filtered = filtered.filter(
-      (e) =>
-        e.title.toLowerCase().includes(q) ||
-        e.shortDescription.toLowerCase().includes(q) ||
-        (e.tags || []).some((t) => t.toLowerCase().includes(q)),
-    );
-  }
-
-  if (filters.category && filters.category !== "all") {
-    filtered = filtered.filter((e) => e.category.toLowerCase() === filters.category!.toLowerCase());
-  }
-
-  if (filters.status && filters.status !== "all") {
-    filtered = filtered.filter((e) => e.status.toLowerCase() === filters.status!.toLowerCase());
-  }
-
-  if (filters.tags) {
-    const requestedTags = filters.tags.split(",").map((t) => t.trim().toLowerCase());
-    filtered = filtered.filter((e) =>
-      (e.tags || []).some((t) => requestedTags.includes(t.toLowerCase())),
-    );
-  }
-
-  const total = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(total / filters.limit));
-  const startIndex = (filters.page - 1) * filters.limit;
-  const paginatedEvents = filtered.slice(startIndex, startIndex + filters.limit);
-
-  return {
-    events: paginatedEvents,
-    pagination: {
-      total,
-      totalPages,
-      hasNextPage: filters.page < totalPages,
-      hasPreviousPage: filters.page > 1,
-    },
-  };
 }
 
 const useFetchEventWithFilter = (filters: EventFilters) => {
@@ -121,13 +27,16 @@ const useFetchEventWithFilter = (filters: EventFilters) => {
       if (res.data?.data?.events) {
         return res.data.data;
       }
-      return { events: [], pagination: { total: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false } };
+      return {
+        events: [],
+        pagination: { total: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
+      };
     },
     refetchOnReconnect: true,
     refetchOnWindowFocus: false,
     staleTime: 30_000,
     placeholderData: (previousData) => previousData,
-    retry: 1
+    retry: 1,
   });
 };
 

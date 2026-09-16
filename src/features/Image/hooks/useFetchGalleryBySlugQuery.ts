@@ -12,7 +12,10 @@ export interface GalleryDetailItem {
   images?: Array<{
     _id?: string;
     url: string;
+    publicId?: string;
     caption?: string;
+    featured?: boolean;
+    category?: string;
   }>;
   tags?: string[];
   visibility?: string;
@@ -32,22 +35,20 @@ export const useFetchGalleryBySlugQuery = (slug?: string) => {
     queryKey: ["galleryBySlug", slug],
     queryFn: async () => {
       if (!slug) return null;
-      try {
-        const response = await api.get<FetchGalleryBySlugResponse>(
-          `/api/v1/find/galleryBySlug/${encodeURIComponent(slug)}`,
-        );
-        const data = response.data?.data;
-        if (Array.isArray(data)) {
-          return data[0] || null;
-        }
-        return data || null;
-      } catch (err) {
-        console.warn(`Could not fetch gallery for slug ${slug}, returning null:`, err);
-        return null;
+      const response = await api.get<FetchGalleryBySlugResponse>(
+        `/api/v1/findGalleryBySlug/${encodeURIComponent(slug)}`,
+      );
+      const data = response.data?.data;
+      if (Array.isArray(data)) {
+        return data[0] || null;
       }
+      if (data && typeof data === "object") {
+        return data;
+      }
+      return null;
     },
     enabled: Boolean(slug),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 1000,
   });
 };
 
