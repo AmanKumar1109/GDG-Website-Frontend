@@ -21,7 +21,7 @@ const Timeline = ({ timeline }: { timeline: EventTimelineItem[] }) => {
         {sortedTimeline.map((item, index) => {
           const startMs = new Date(item.startAt).getTime();
           const endMs = item.endAt ? new Date(item.endAt).getTime() : startMs;
-          
+
           const isPast = endMs < now;
           const isLive = startMs <= now && endMs >= now;
 
@@ -34,7 +34,7 @@ const Timeline = ({ timeline }: { timeline: EventTimelineItem[] }) => {
               key={item._id || index}
               className="relative flex flex-col md:flex-row items-start group"
             >
-              {/* Dot Marker (Absolute for perfectly aligning with the line across breakpoints) */}
+              {/* Dot Marker */}
               <div
                 className={`absolute left-[7px] sm:left-[15px] md:left-[168px] top-[4px] md:top-[6px] flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[3px] bg-[#0a0a0a] transition-colors duration-500
                   ${
@@ -55,13 +55,13 @@ const Timeline = ({ timeline }: { timeline: EventTimelineItem[] }) => {
 
               {/* Time Section */}
               <div className="md:w-[180px] flex-shrink-0 md:text-right pb-2 md:pb-0 pl-10 sm:pl-16 md:pl-0 pr-0 md:pr-10 pt-0.5">
-                  <span className={`text-sm sm:text-base font-bold block ${isLive ? 'text-emerald-400' : 'text-white/90'}`}>
-                    {formatDate(item.startAt)}
-                  </span>
-                  <span className={`text-xs sm:text-sm mt-0.5 sm:mt-1 font-semibold block ${isLive ? 'text-emerald-400/80' : 'text-white/40'}`}>
-                    {formatTime(item.startAt)}
-                    {item.endAt && item.endAt !== item.startAt && ` - ${formatTime(item.endAt)}`}
-                  </span>
+                <span className={`text-sm sm:text-base font-bold block ${isLive ? "text-emerald-400" : "text-white/90"}`}>
+                  {formatDate(item.startAt)}
+                </span>
+                <span className={`text-xs sm:text-sm mt-0.5 sm:mt-1 font-semibold block ${isLive ? "text-emerald-400/80" : "text-white/40"}`}>
+                  {formatTime(item.startAt)}
+                  {item.endAt && item.endAt !== item.startAt && ` - ${formatTime(item.endAt)}`}
+                </span>
               </div>
 
               {/* Content Section */}
@@ -89,150 +89,11 @@ const Timeline = ({ timeline }: { timeline: EventTimelineItem[] }) => {
                       </span>
                     )}
                   </div>
-
-                  {/* ======================================================
-                      COLUMN 3: CARD CONTENT
-                  ====================================================== */}
-                  <button
-                    type="button"
-                    onClick={() => toggleItem(index)}
-                    aria-expanded={isOpen}
-                    className={`
-                      group
-                      relative
-                      w-full
-                      overflow-hidden
-                      rounded-xl
-                      border
-                      text-left
-                      transition-all
-                      duration-300
-                      sm:rounded-2xl
-                      ${
-                        isOpen
-                          ? isFirst
-                            ? "border-[#34A853]/30 bg-[#34A853]/[0.04]"
-                            : "border-[#A855F7]/30 bg-[#A855F7]/[0.03]"
-                          : "border-white/[0.08] bg-white/[0.015] hover:border-white/[0.15] hover:bg-white/[0.03]"
-                      }
-                    `}
-                  >
-                    {/* Left Accent Bar */}
-                    <span
-                      className={`
-                        absolute
-                        bottom-0
-                        left-0
-                        top-0
-                        w-[3px]
-                        ${isFirst ? "bg-[#34A853]" : isLast ? "bg-[#FBBC04]" : "bg-[#A855F7]"}
-                      `}
-                    />
-
-                    <div className="p-4 sm:p-5 md:p-6">
-                      {/* Mobile Date Header */}
-                      <div className="mb-2 flex items-center gap-2 sm:hidden">
-                        <CalendarDays size={12} className="text-white/40" />
-                        <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
-                          {formatDate(item.startAt)}
-                        </span>
-                        <span className="h-3 w-px bg-white/10" />
-                        <Clock3 size={12} className="text-white/40" />
-                        <span className="text-[10px] text-white/40">
-                          {formatTime(item.startAt)}
-                        </span>
-                      </div>
-
-                      {/* Header Title & Badges */}
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <h3
-                              className={`
-                                text-sm
-                                font-semibold
-                                tracking-tight
-                                sm:text-base
-                                md:text-lg
-                                ${isOpen ? "text-white" : "text-white/85"}
-                              `}
-                            >
-                              {item.title}
-                            </h3>
-
-                            {isFirst && (
-                              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#34A853]/30 bg-[#34A853]/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#34A853]">
-                                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#34A853]" />
-                                Live
-                              </span>
-                            )}
-
-                            {isLast && (
-                              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#FBBC04]/30 bg-[#FBBC04]/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#FBBC04]">
-                                <Check size={10} />
-                                Final
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Desktop Time Display Inside Card */}
-                          {item.endAt && (
-                            <div className="mt-1 hidden items-center gap-1.5 text-xs text-white/35 sm:flex">
-                              <span>Ends at {formatTime(item.endAt)}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Expand Chevron Icon */}
-                        <span
-                          className={`
-                            flex
-                            h-7
-                            w-7
-                            shrink-0
-                            items-center
-                            justify-center
-                            rounded-lg
-                            border
-                            border-white/[0.08]
-                            bg-white/[0.03]
-                            text-white/40
-                            transition-transform
-                            duration-300
-                            sm:h-8
-                            sm:w-8
-                            ${isOpen ? "rotate-180 text-white" : "group-hover:text-white/70"}
-                          `}
-                        >
-                          <ChevronDown size={14} />
-                        </span>
-                      </div>
-
-                      {/* Accordion Expandable Description */}
-                      <div
-                        className={`
-                          grid
-                          transition-all
-                          duration-300
-                          ease-in-out
-                          ${
-                            isOpen
-                              ? "mt-3 grid-rows-[1fr] opacity-100"
-                              : "grid-rows-[0fr] opacity-0"
-                          }
-                        `}
-                      >
-                        <div className="overflow-hidden">
-                          <div className="border-t border-white/[0.08] pt-3">
-                            <p className="text-xs leading-relaxed text-white/50 sm:text-sm">
-                              {item.description ||
-                                "No additional information is available for this schedule item."}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </button>
+                  {item.description && (
+                    <p className="text-xs sm:text-sm text-white/60 leading-relaxed">
+                      {item.description}
+                    </p>
+                  )}
                 </div>
               </div>
             </motion.div>

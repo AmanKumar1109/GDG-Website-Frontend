@@ -1,10 +1,12 @@
-import React from "react";
-import { Star, Quote, CheckCircle2, Calendar } from "lucide-react";
-import { FaLinkedin } from "react-icons/fa";
+import React, { useState } from "react";
+import { Star, Quote, CheckCircle2, Calendar, Play, X, Video } from "lucide-react";
+import { FaLinkedin, FaYoutube } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 import { ScrollReveal } from "../../../../Components/ScrollReveal";
 
 export interface Testimonial {
   id: string;
+  type?: "card" | "video";
   name: string;
   role: string;
   organization: string;
@@ -12,10 +14,14 @@ export interface Testimonial {
   badge: string;
   badgeBg: string;
   badgeText: string;
-  rating: number;
-  quote: string;
+  rating?: number;
+  quote?: string;
   year: string;
   linkedinUrl?: string;
+  videoUrl?: string;
+  videoThumbnail?: string;
+  videoDuration?: string;
+  videoTitle?: string;
 }
 
 const COLUMN_1_TESTIMONIALS: Testimonial[] = [
@@ -69,17 +75,22 @@ const COLUMN_1_TESTIMONIALS: Testimonial[] = [
   },
   {
     id: "t-4",
+    type: "video",
     name: "Dr. Arvind Pathak",
     role: "Department Chair (CSE)",
     organization: "Jharkhand Tech University",
     avatar:
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=256&q=80",
-    badge: "ACADEMIC PARTNER",
-    badgeBg: "bg-[#FBBC04]",
-    badgeText: "text-black",
-    rating: 5,
+    badge: "ACADEMIC KEYNOTE",
+    badgeBg: "bg-[#4285F4]",
+    badgeText: "text-white",
     quote:
-      "GDG Ranchi plays a pivotal role bridging traditional academia and real-world tech industry practices. Thousands of our undergraduate students have gained production-grade cloud and AI skills.",
+      "GDG Ranchi plays a pivotal role bridging traditional academia and real-world tech industry practices for thousands of undergraduate students.",
+    videoTitle: "Bridging Academia & Industry with Google Tech",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoThumbnail:
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80",
+    videoDuration: "2:40",
     year: "2024",
     linkedinUrl: "https://linkedin.com",
   },
@@ -136,17 +147,22 @@ const COLUMN_2_TESTIMONIALS: Testimonial[] = [
   },
   {
     id: "t-8",
+    type: "video",
     name: "Shreya Mukherjee",
-    role: "Flutter Architect",
+    role: "Flutter Architect & Speaker",
     organization: "FlutterFlow Partner",
     avatar:
       "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&w=256&q=80",
-    badge: "WORKSHOP SPEAKER",
+    badge: "SPEAKER STORY",
     badgeBg: "bg-[#34A853]",
     badgeText: "text-white",
-    rating: 5,
     quote:
-      "Mentoring over 300+ students during DevFest's cross-platform app hackathon was unforgettable. Seeing complete beginners deploy live Flutter applications in a single weekend is what GDG is all about.",
+      "Mentoring over 300+ students during cross-platform hackathons was unforgettable. Complete beginners deployed live Flutter applications in a single weekend!",
+    videoTitle: "Scaling Cross-Platform Apps with Flutter",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoThumbnail:
+      "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80",
+    videoDuration: "1:55",
     year: "2024",
     linkedinUrl: "https://linkedin.com",
   },
@@ -155,17 +171,22 @@ const COLUMN_2_TESTIMONIALS: Testimonial[] = [
 const COLUMN_3_TESTIMONIALS: Testimonial[] = [
   {
     id: "t-9",
+    type: "video",
     name: "Abhishek Raj",
     role: "Core Builder & Engineer",
     organization: "Jharkhand Open Source",
     avatar:
       "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=256&q=80",
-    badge: "REGIONAL BUILDER",
+    badge: "COMMUNITY BUILDER",
     badgeBg: "bg-[#FBBC04]",
     badgeText: "text-black",
-    rating: 5,
     quote:
-      "We built regional open-source repositories and connected student contributors from every college in Ranchi. GDG Ranchi created the collaborative momentum we needed to scale local tech innovation.",
+      "Recap of our regional open-source initiative: uniting student contributors from 8 colleges across Ranchi to build real production tooling.",
+    videoTitle: "Building Open Source in Ranchi",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoThumbnail:
+      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
+    videoDuration: "3:10",
     year: "2024",
     linkedinUrl: "https://linkedin.com",
   },
@@ -240,7 +261,7 @@ const TestimonialCard: React.FC<{ item: Testimonial }> = ({ item }) => (
 
       {/* 5-Star Rating */}
       <div className="flex items-center gap-1 text-[#FBBC04] mb-3">
-        {Array.from({ length: item.rating }).map((_, i) => (
+        {Array.from({ length: item.rating ?? 5 }).map((_, i) => (
           <Star key={i} size={13} className="fill-[#FBBC04] text-[#FBBC04]" />
         ))}
       </div>
@@ -296,7 +317,124 @@ const TestimonialCard: React.FC<{ item: Testimonial }> = ({ item }) => (
   </div>
 );
 
+// Video Testimonial Component
+const VideoTestimonialCard: React.FC<{
+  item: Testimonial;
+  onPlay: (item: Testimonial) => void;
+}> = ({ item, onPlay }) => (
+  <div className="group relative flex flex-col justify-between p-5 rounded-2xl border-2 border-white/15 bg-[#0e0e14]/95 hover:border-[#EA4335] transition-all duration-300 hover:shadow-[0_0_35px_rgba(234,67,53,0.22)] hover:-translate-y-1 backdrop-blur-md overflow-hidden shrink-0">
+    <div>
+      {/* Header: Video Badge & Duration */}
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <span className="inline-flex items-center gap-1.5 bg-[#EA4335] text-white border-2 border-black rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase shadow-[2px_2px_0_0_#000]">
+          <FaYoutube size={12} />
+          <span>VIDEO STORY</span>
+        </span>
+        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-white/40">
+          <Calendar size={12} />
+          {item.year}
+        </span>
+      </div>
+
+      {/* Video Poster Thumbnail with Glowing Play Button */}
+      <div
+        onClick={() => onPlay(item)}
+        className="relative h-[180px] sm:h-[200px] rounded-xl overflow-hidden cursor-pointer border border-white/10 group-hover:border-white/20 transition-all mb-3.5"
+      >
+        <img
+          src={item.videoThumbnail || item.avatar}
+          alt={item.videoTitle || item.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+
+        {/* Duration badge */}
+        {item.videoDuration && (
+          <div className="absolute bottom-2.5 right-2.5 bg-black/80 border border-white/20 px-2 py-0.5 rounded text-[10px] font-bold text-white tracking-wider backdrop-blur-md">
+            {item.videoDuration}
+          </div>
+        )}
+
+        {/* Video title overlay */}
+        {item.videoTitle && (
+          <div className="absolute bottom-2.5 left-2.5 right-14 text-left">
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#FBBC04] uppercase tracking-wider">
+              <Video size={11} />
+              Featured Story
+            </span>
+            <h4 className="text-xs font-bold text-white truncate drop-shadow-md">
+              {item.videoTitle}
+            </h4>
+          </div>
+        )}
+
+        {/* Center Animated Play Button */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative flex items-center justify-center w-12 h-12 rounded-full bg-white text-black group-hover:scale-110 shadow-[0_0_25px_rgba(255,255,255,0.45)] group-hover:bg-[#EA4335] group-hover:text-white transition-all duration-300">
+            <Play size={18} className="fill-current ml-0.5" />
+          </div>
+        </div>
+      </div>
+
+      {/* Snippet / Quote text */}
+      {item.quote && (
+        <p className="text-xs sm:text-sm leading-relaxed text-gray-300 group-hover:text-white transition-colors line-clamp-2">
+          "{item.quote}"
+        </p>
+      )}
+    </div>
+
+    {/* Author Footer */}
+    <div className="mt-4 flex items-center justify-between pt-3 border-t border-white/[0.08]">
+      <div className="flex items-center gap-2.5 min-w-0">
+        <div className="relative p-[1.5px] rounded-full bg-gradient-to-tr from-[#EA4335] via-[#FBBC04] to-[#4285F4] shrink-0">
+          <img
+            src={item.avatar}
+            alt={item.name}
+            className="h-9 w-9 rounded-full object-cover"
+            loading="lazy"
+          />
+        </div>
+        <div className="min-w-0 flex-1 text-left">
+          <div className="flex items-center gap-1.5">
+            <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-[#EA4335] transition-colors truncate">
+              {item.name}
+            </h4>
+            <CheckCircle2 size={13} className="text-[#34A853] shrink-0" />
+          </div>
+          <p className="text-[11px] text-gray-400 truncate">
+            {item.role} • <span className="text-white/70">{item.organization}</span>
+          </p>
+        </div>
+      </div>
+
+      {item.linkedinUrl && (
+        <a
+          href={item.linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white/30 hover:text-[#0A66C2] transition-colors p-1.5 shrink-0"
+          title="LinkedIn Profile"
+        >
+          <FaLinkedin size={15} />
+        </a>
+      )}
+    </div>
+  </div>
+);
+
 export const TestimonialsSec: React.FC = () => {
+  const [activeVideo, setActiveVideo] = useState<Testimonial | null>(null);
+
+  const handleOpenVideo = (item: Testimonial) => {
+    setActiveVideo(item);
+  };
+
+  const handleCloseVideo = () => {
+    setActiveVideo(null);
+  };
+
   return (
     <section
       id="testimonials"
@@ -338,13 +476,13 @@ export const TestimonialsSec: React.FC = () => {
             </h2>
 
             <p className="mt-3.5 text-sm sm:text-base text-gray-400 max-w-lg mx-auto leading-relaxed">
-              Real stories of mentorship, engineering, and career impact.
+              Real video stories & testimonials of mentorship, engineering, and career impact.
             </p>
           </div>
         </ScrollReveal>
 
         {/* 3-Column Moving Vertical Marquee (NamasteDev style: Bottom to Top, Pause on Hover) */}
-        <div className="relative mt-6 sm:mt-8 h-[580px] sm:h-[85vh] overflow-hidden">
+        <div className="relative mt-6 sm:mt-8 h-[600px] sm:h-[88vh] overflow-hidden">
           {/* Top & Bottom Gradient Fades with subtle backdrop blur */}
           <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-28 sm:h-36 bg-gradient-to-b from-black via-black/85 to-transparent backdrop-blur-[2px]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-28 sm:h-36 bg-gradient-to-t from-black via-black/85 to-transparent backdrop-blur-[2px]" />
@@ -355,14 +493,30 @@ export const TestimonialsSec: React.FC = () => {
             <div className="overflow-hidden">
               <div
                 className="animate-marquee-up flex flex-col gap-5 sm:gap-6"
-                style={{ "--marquee-duration": "30s" } as React.CSSProperties}
+                style={{ "--marquee-duration": "32s" } as React.CSSProperties}
               >
-                {COLUMN_1_TESTIMONIALS.map((item, idx) => (
-                  <TestimonialCard key={`col1-orig-${item.id}-${idx}`} item={item} />
-                ))}
-                {COLUMN_1_TESTIMONIALS.map((item, idx) => (
-                  <TestimonialCard key={`col1-dup-${item.id}-${idx}`} item={item} />
-                ))}
+                {COLUMN_1_TESTIMONIALS.map((item, idx) =>
+                  item.type === "video" ? (
+                    <VideoTestimonialCard
+                      key={`col1-orig-${item.id}-${idx}`}
+                      item={item}
+                      onPlay={handleOpenVideo}
+                    />
+                  ) : (
+                    <TestimonialCard key={`col1-orig-${item.id}-${idx}`} item={item} />
+                  )
+                )}
+                {COLUMN_1_TESTIMONIALS.map((item, idx) =>
+                  item.type === "video" ? (
+                    <VideoTestimonialCard
+                      key={`col1-dup-${item.id}-${idx}`}
+                      item={item}
+                      onPlay={handleOpenVideo}
+                    />
+                  ) : (
+                    <TestimonialCard key={`col1-dup-${item.id}-${idx}`} item={item} />
+                  )
+                )}
               </div>
             </div>
 
@@ -370,14 +524,30 @@ export const TestimonialsSec: React.FC = () => {
             <div className="hidden md:block overflow-hidden">
               <div
                 className="animate-marquee-up flex flex-col gap-5 sm:gap-6"
-                style={{ "--marquee-duration": "38s" } as React.CSSProperties}
+                style={{ "--marquee-duration": "40s" } as React.CSSProperties}
               >
-                {COLUMN_2_TESTIMONIALS.map((item, idx) => (
-                  <TestimonialCard key={`col2-orig-${item.id}-${idx}`} item={item} />
-                ))}
-                {COLUMN_2_TESTIMONIALS.map((item, idx) => (
-                  <TestimonialCard key={`col2-dup-${item.id}-${idx}`} item={item} />
-                ))}
+                {COLUMN_2_TESTIMONIALS.map((item, idx) =>
+                  item.type === "video" ? (
+                    <VideoTestimonialCard
+                      key={`col2-orig-${item.id}-${idx}`}
+                      item={item}
+                      onPlay={handleOpenVideo}
+                    />
+                  ) : (
+                    <TestimonialCard key={`col2-orig-${item.id}-${idx}`} item={item} />
+                  )
+                )}
+                {COLUMN_2_TESTIMONIALS.map((item, idx) =>
+                  item.type === "video" ? (
+                    <VideoTestimonialCard
+                      key={`col2-dup-${item.id}-${idx}`}
+                      item={item}
+                      onPlay={handleOpenVideo}
+                    />
+                  ) : (
+                    <TestimonialCard key={`col2-dup-${item.id}-${idx}`} item={item} />
+                  )
+                )}
               </div>
             </div>
 
@@ -385,21 +555,107 @@ export const TestimonialsSec: React.FC = () => {
             <div className="hidden lg:block overflow-hidden">
               <div
                 className="animate-marquee-up flex flex-col gap-5 sm:gap-6"
-                style={{ "--marquee-duration": "34s" } as React.CSSProperties}
+                style={{ "--marquee-duration": "35s" } as React.CSSProperties}
               >
-                {COLUMN_3_TESTIMONIALS.map((item, idx) => (
-                  <TestimonialCard key={`col3-orig-${item.id}-${idx}`} item={item} />
-                ))}
-                {COLUMN_3_TESTIMONIALS.map((item, idx) => (
-                  <TestimonialCard key={`col3-dup-${item.id}-${idx}`} item={item} />
-                ))}
+                {COLUMN_3_TESTIMONIALS.map((item, idx) =>
+                  item.type === "video" ? (
+                    <VideoTestimonialCard
+                      key={`col3-orig-${item.id}-${idx}`}
+                      item={item}
+                      onPlay={handleOpenVideo}
+                    />
+                  ) : (
+                    <TestimonialCard key={`col3-orig-${item.id}-${idx}`} item={item} />
+                  )
+                )}
+                {COLUMN_3_TESTIMONIALS.map((item, idx) =>
+                  item.type === "video" ? (
+                    <VideoTestimonialCard
+                      key={`col3-dup-${item.id}-${idx}`}
+                      item={item}
+                      onPlay={handleOpenVideo}
+                    />
+                  ) : (
+                    <TestimonialCard key={`col3-dup-${item.id}-${idx}`} item={item} />
+                  )
+                )}
               </div>
             </div>
           </div>
         </div>
-
-      
       </div>
+
+      {/* Interactive Video Modal Lightbox */}
+      <AnimatePresence>
+        {activeVideo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleCloseVideo}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-3xl rounded-3xl border-2 border-white/20 bg-[#0e0e16] p-4 sm:p-6 shadow-[10px_10px_0_0_#000] overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={activeVideo.avatar}
+                    alt={activeVideo.name}
+                    className="w-10 h-10 rounded-full object-cover border border-white/20"
+                  />
+                  <div>
+                    <h3 className="text-base font-bold text-white flex items-center gap-1.5">
+                      {activeVideo.name}
+                      <span
+                        className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${activeVideo.badgeBg} ${activeVideo.badgeText}`}
+                      >
+                        {activeVideo.badge}
+                      </span>
+                    </h3>
+                    <p className="text-xs text-gray-400">
+                      {activeVideo.role} • {activeVideo.organization}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleCloseVideo}
+                  aria-label="Close video"
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Video Player Embed */}
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-white/10">
+                <iframe
+                  src={`${activeVideo.videoUrl}?autoplay=1`}
+                  title={activeVideo.videoTitle || activeVideo.name}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+
+              {/* Modal Footer Description */}
+              {activeVideo.quote && (
+                <p className="mt-4 text-xs sm:text-sm text-gray-300 italic">
+                  "{activeVideo.quote}"
+                </p>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

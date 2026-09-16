@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../utils/axios.utils";
 import type { EventResponse } from "../type/Event.type";
@@ -13,7 +12,8 @@ function useFetchEventDetaill(slug: string) {
       }
       throw new Error("Event not found");
     },
-    retry: 1
+    enabled: !!slug,
+    retry: 1,
   });
 }
 
