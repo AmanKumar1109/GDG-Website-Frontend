@@ -1,6 +1,31 @@
 import { ArrowDown, ArrowRight, Calendar, MapPin, Users, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { showJoinCommunityModal } from "../../../../utils/communityAlert";
+
+// Ultra-smooth GPU-accelerated stagger variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 22 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.65,
+      ease: [0.22, 1, 0.36, 1], // Smooth cubic out curve
+    },
+  },
+};
 
 const HeroSec = () => {
   return (
@@ -9,13 +34,14 @@ const HeroSec = () => {
       <div className="absolute inset-0 pointer-events-none select-none">
         {/* Subtle Grid */}
         <div
-          className="h-full w-full opacity-[0.06]"
+          className="h-full w-full opacity-[0.06] transform-gpu"
           style={{
             backgroundImage: `
               linear-gradient(to right, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
               linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 1px, transparent 1px)
             `,
             backgroundSize: "64px 64px",
+            transform: "translateZ(0)",
           }}
         />
 
@@ -23,7 +49,7 @@ const HeroSec = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_rgba(0,0,0,0.5)_60%,_#050505_100%)] pointer-events-none" />
 
         {/* Big Center Radar Circle */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] sm:w-[520px] sm:h-[520px] lg:w-[680px] lg:h-[680px] rounded-full border border-white/[0.08] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] sm:w-[520px] sm:h-[520px] lg:w-[680px] lg:h-[680px] rounded-full border border-white/[0.08] pointer-events-none transform-gpu" />
 
         {/* Center Soundwave / Frequency Texture inside circle */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center gap-1 sm:gap-1.5 opacity-[0.12] w-full max-w-[420px] sm:max-w-[560px] h-36 overflow-hidden pointer-events-none">
@@ -63,10 +89,20 @@ const HeroSec = () => {
         </div>
       </div>
 
-      {/* ================= CENTER CONTENT ================= */}
-      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center px-4 sm:px-6 lg:px-8 text-center my-auto">
-        {/* Top Tag Pill */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/60 px-4 py-1.5 backdrop-blur-md shadow-2xl transition-transform hover:scale-105">
+      {/* ================= CENTER CONTENT WITH GPU-ACCELERATED STAGGER ================= */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center px-4 sm:px-6 lg:px-8 text-center my-auto transform-gpu"
+        style={{ transform: "translateZ(0)" }}
+      >
+        {/* 1. Top Tag Pill */}
+        <motion.div
+          variants={itemVariants}
+          style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
+          className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/60 px-4 py-1.5 backdrop-blur-md shadow-2xl transition-transform hover:scale-105 transform-gpu"
+        >
           <span className="inline-flex items-center text-xs font-black tracking-tight">
             <span className="text-[#EA4335]">&lt;</span>
             <span className="text-[#FBBC04]">&gt;</span>
@@ -74,10 +110,14 @@ const HeroSec = () => {
           <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.22em] text-white/90">
             GDG RANCHI 2026
           </span>
-        </div>
+        </motion.div>
 
-        {/* Main Headline */}
-        <h1 className="mt-5 sm:mt-7 font-black tracking-tight text-center leading-[0.92] select-none">
+        {/* 2. Main Headline */}
+        <motion.h1
+          variants={itemVariants}
+          style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
+          className="mt-5 sm:mt-7 font-black tracking-tight text-center leading-[0.92] select-none transform-gpu"
+        >
           <span className="block text-6xl sm:text-8xl md:text-9xl lg:text-[112px] xl:text-[124px] bg-gradient-to-b from-white via-[#f0f0f5] to-[#a2a2b0] bg-clip-text text-transparent drop-shadow-[0_12px_32px_rgba(255,255,255,0.08)]">
             GDG
           </span>
@@ -85,21 +125,33 @@ const HeroSec = () => {
             RANCHI
             <span className="inline-block w-3.5 h-3.5 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 rounded-full bg-[#4285F4] ml-2 sm:ml-3 mb-1 sm:mb-2 align-baseline shadow-[0_0_24px_rgba(66,133,244,0.9)]" />
           </span>
-        </h1>
+        </motion.h1>
 
-        {/* Tagline */}
-        <div className="mt-5 sm:mt-6 text-xs sm:text-sm md:text-base font-bold tracking-[0.28em] text-white/85 uppercase">
+        {/* 3. Tagline */}
+        <motion.div
+          variants={itemVariants}
+          style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
+          className="mt-5 sm:mt-6 text-xs sm:text-sm md:text-base font-bold tracking-[0.28em] text-white/85 uppercase transform-gpu"
+        >
           BUILD · LEARN · CONNECT · GROW
-        </div>
+        </motion.div>
 
-        {/* Description */}
-        <p className="mt-3.5 sm:mt-4 max-w-xl text-xs sm:text-sm md:text-[15px] leading-relaxed text-white/60">
+        {/* 4. Description */}
+        <motion.p
+          variants={itemVariants}
+          style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
+          className="mt-3.5 sm:mt-4 max-w-xl text-xs sm:text-sm md:text-[15px] leading-relaxed text-white/60 transform-gpu"
+        >
           A thriving developer community in Ranchi, empowering students, professionals and creators
           to learn, build and grow together with Google technologies.
-        </p>
+        </motion.p>
 
-        {/* Call to Action Buttons */}
-        <div className="mt-7 sm:mt-8 flex flex-wrap items-center justify-center gap-3.5 sm:gap-4">
+        {/* 5. Call to Action Buttons */}
+        <motion.div
+          variants={itemVariants}
+          style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
+          className="mt-7 sm:mt-8 flex flex-wrap items-center justify-center gap-3.5 sm:gap-4 transform-gpu"
+        >
           <button
             type="button"
             onClick={showJoinCommunityModal}
@@ -116,11 +168,17 @@ const HeroSec = () => {
             <span>Explore Events</span>
             <ArrowDown size={15} strokeWidth={2} />
           </Link>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* ================= BOTTOM HIGHLIGHTS BAR & GOOGLE 4-COLOR STRIP ================= */}
-      <div className="relative z-10 w-full border-t border-white/[0.08] bg-black/60 backdrop-blur-lg mt-12 sm:mt-16">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
+        className="relative z-10 w-full border-t border-white/[0.08] bg-black/60 backdrop-blur-lg mt-12 sm:mt-16 transform-gpu"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center md:text-left">
             {/* Highlight 1 */}
@@ -164,7 +222,7 @@ const HeroSec = () => {
           <div className="bg-[#FBBC04]" />
           <div className="bg-[#34A853]" />
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };
